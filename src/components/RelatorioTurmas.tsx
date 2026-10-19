@@ -37,6 +37,7 @@ import {
 import { BNCCSkill, UserStats } from '../types/game';
 import { getPlayerLevelInfo } from '../utils/levels';
 import { soundManager } from '../utils/audio';
+import { RankingEstudantes } from './RankingEstudantes';
 
 interface Props {
   userStats: UserStats;
@@ -514,6 +515,13 @@ export const RelatorioTurmas: React.FC<Props> = ({
           )}
         </div>
       </div>
+
+      {/* Top 5 Students Ranking Podium & Leaderboard */}
+      <RankingEstudantes
+        students={students}
+        currentStudentName={userStats.studentName}
+        classroomName={selectedClass?.name}
+      />
 
       {/* Classroom BNCC Bar Chart with Recharts */}
       <div className="bg-white rounded-3xl border border-slate-200 shadow-xs p-6 sm:p-8 space-y-6">

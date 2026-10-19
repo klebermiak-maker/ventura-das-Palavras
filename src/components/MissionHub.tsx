@@ -3,7 +3,7 @@ import { motion, type Variants } from 'framer-motion';
 import { Search, Compass, Eye, Sparkles, Star, Award, ArrowRight, BookOpen, CheckCircle, BarChart3, HelpCircle, Users, User, UserCheck } from 'lucide-react';
 import { BNCC_SKILLS_INFO } from '../data/bnccContent';
 import { soundManager } from '../utils/audio';
-import { DicaDoDiaCard } from './DicaDoDiaCard';
+import { DicaDeOuro } from './DicaDeOuro';
 import { NivelProgressoXP } from './NivelProgressoXP';
 import { ResumoDesempenhoGrafico } from './ResumoDesempenhoGrafico';
 
@@ -242,8 +242,8 @@ export const MissionHub: React.FC<Props> = ({
       {/* Level Progression & XP Bar */}
       <NivelProgressoXP score={score} />
 
-      {/* Dica do Dia Card */}
-      <DicaDoDiaCard onBonusPoints={onBonusPoints} />
+      {/* Dica de Ouro Card */}
+      <DicaDeOuro onBonusPoints={onBonusPoints} />
 
       {/* 4 Missions Grid */}
       <section className="space-y-6">
@@ -257,7 +257,18 @@ export const MissionHub: React.FC<Props> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                onSelectMission('dicionario');
+              }}
+              className="text-xs text-purple-700 hover:text-purple-900 font-bold bg-purple-50 border border-purple-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer shadow-xs"
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Dicionário Visual 📖</span>
+            </button>
+
             <button
               onClick={() => {
                 soundManager.playClick();
@@ -414,6 +425,46 @@ export const MissionHub: React.FC<Props> = ({
           >
             <span>Jogar Sprint Agora</span>
             <ArrowRight className="w-4 h-4 text-amber-400" />
+          </motion.button>
+        </motion.div>
+
+        {/* Dicionário Visual Glossário Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-700 text-white rounded-3xl p-6 sm:p-8 shadow-md flex flex-col md:flex-row items-center justify-between gap-6"
+        >
+          <div className="flex items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-xs flex items-center justify-center text-3xl shadow-xs shrink-0">
+              📖
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold tracking-wider uppercase text-purple-200">
+                <span>VOCABULÁRIO & ORTOGRAFIA</span>
+                <span aria-hidden="true">·</span>
+                <span>GLOSSÁRIO ILUSTRADO</span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-extrabold font-display text-white">
+                Dicionário Visual: Termos Complexos dos Jogos
+              </h3>
+              <p className="text-xs sm:text-sm text-purple-100 max-w-xl leading-relaxed">
+                Descubra o significado, divisão silábica com sílaba tônica, pronúncia por voz e regras de ortografia de termos desafiadores como <em>Caatinga</em>, <em>Carapaça</em>, <em>Embaúba</em>, <em>Telescópio</em> e <em>Proparoxítona</em>.
+              </p>
+            </div>
+          </div>
+
+          <motion.button
+            whileHover={{ scale: 1.04 }}
+            whileTap={{ scale: 0.96 }}
+            onClick={() => {
+              soundManager.playClick();
+              onSelectMission('dicionario');
+            }}
+            className="w-full md:w-auto px-6 py-3.5 bg-white hover:bg-slate-100 text-indigo-950 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md cursor-pointer flex items-center justify-center gap-2 shrink-0"
+          >
+            <span>Abrir Dicionário Visual</span>
+            <ArrowRight className="w-4 h-4 text-indigo-700" />
           </motion.button>
         </motion.div>
       </section>

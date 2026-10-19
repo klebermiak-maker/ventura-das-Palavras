@@ -127,6 +127,17 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => {
               soundManager.playClick();
+              onNavigate('dicionario');
+            }}
+            className={`whitespace-nowrap shrink-0 hover:text-slate-900 transition-colors py-1 cursor-pointer flex items-center gap-1 ${
+              currentView === 'dicionario' ? 'text-indigo-600 font-semibold border-b-2 border-indigo-600' : ''
+            }`}
+          >
+            <span>Dicionário 📖</span>
+          </button>
+          <button
+            onClick={() => {
+              soundManager.playClick();
               onNavigate('turmas');
             }}
             className={`whitespace-nowrap shrink-0 hover:text-slate-900 transition-colors py-1 cursor-pointer flex items-center gap-1 ${

@@ -9,6 +9,7 @@ import { AcentuacaoGame } from './components/AcentuacaoGame';
 import { SprintGame } from './components/SprintGame';
 import { RelatorioEducador } from './components/RelatorioEducador';
 import { RelatorioTurmas } from './components/RelatorioTurmas';
+import { DicionarioVisual } from './components/DicionarioVisual';
 import { StudentIdentificationModal } from './components/StudentIdentificationModal';
 import { RegrasAcentuacaoModal } from './components/RegrasAcentuacaoModal';
 import { CelebrationOverlay, CelebrationData } from './components/CelebrationOverlay';
@@ -379,6 +380,22 @@ export default function App() {
                 currentClassroomId={stats.classroomId || 'turma-4a'}
                 onNavigate={setCurrentView}
                 onOpenIdentityModal={() => setIsIdentityModalOpen(true)}
+              />
+            </motion.div>
+          )}
+
+          {currentView === 'dicionario' && (
+            <motion.div
+              key="dicionario"
+              variants={viewTransitionVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <DicionarioVisual
+                onNavigate={setCurrentView}
+                onBonusPoints={handleBonusPoints}
+                studentName={stats.studentName}
               />
             </motion.div>
           )}
