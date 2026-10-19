@@ -159,7 +159,11 @@ export const RelatorioTurmas: React.FC<Props> = ({
 
     soundManager.playClick();
     try {
-      const created = await createClassroom(newClassName, newSchoolName, newTeacherName);
+      const created = await createClassroom(
+        newClassName,
+        newSchoolName || 'Escola Municipal Educandário Nossa Senhora Aparecida',
+        newTeacherName || 'Educador Responsável'
+      );
       setClassrooms(prev => [...prev, created]);
       setSelectedClassId(created.id);
       setIsCreateOpen(false);
@@ -706,7 +710,7 @@ export const RelatorioTurmas: React.FC<Props> = ({
                 <label className="font-bold text-slate-700 block mb-1">Escola:</label>
                 <input
                   type="text"
-                  placeholder="Ex: Escola Municipal Monteiro Lobato"
+                  placeholder="Ex: Escola Municipal Educandário Nossa Senhora Aparecida"
                   value={newSchoolName}
                   onChange={e => setNewSchoolName(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm focus:outline-none focus:border-indigo-600"

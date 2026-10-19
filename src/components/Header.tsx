@@ -9,6 +9,7 @@ interface HeaderProps {
   starsCount: number;
   score: number;
   studentName?: string;
+  classroomName?: string;
   isMuted: boolean;
   onToggleMute: () => void;
   onOpenRules: () => void;
@@ -22,6 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
   starsCount,
   score,
   studentName,
+  classroomName,
   isMuted,
   onToggleMute,
   onOpenRules,
@@ -172,11 +174,20 @@ export const Header: React.FC<HeaderProps> = ({
                 ? 'text-amber-900 bg-amber-100 hover:bg-amber-200 border-amber-300 shadow-2xs animate-pulse'
                 : 'text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border-indigo-200'
             }`}
-            title={studentName ? 'Clique para alterar seu nome e turma escolar' : 'Você precisa se identificar e escolher sua turma!'}
+            title={studentName ? `Aluno: ${studentName}${classroomName ? ` · Turma: ${classroomName}` : ''} (Clique para alterar)` : 'Você precisa se identificar e escolher sua turma!'}
           >
             <User className={`w-3.5 h-3.5 shrink-0 ${!studentName ? 'text-amber-700' : 'text-indigo-600'}`} />
-            <span className="truncate max-w-[130px]">
-              {studentName ? studentName : '⚠️ Escolher Turma'}
+            <span className="truncate max-w-[190px]">
+              {studentName ? (
+                <>
+                  <span>{studentName}</span>
+                  {classroomName && (
+                    <span className="text-indigo-600/80 font-semibold ml-1">· {classroomName}</span>
+                  )}
+                </>
+              ) : (
+                '⚠️ Escolher Turma'
+              )}
             </span>
           </button>
 

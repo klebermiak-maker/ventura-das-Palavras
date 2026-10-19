@@ -4,6 +4,7 @@ import { Search, Compass, Eye, Sparkles, Star, Award, ArrowRight, BookOpen, Chec
 import { BNCC_SKILLS_INFO } from '../data/bnccContent';
 import { soundManager } from '../utils/audio';
 import { DicaDeOuro } from './DicaDeOuro';
+import { DicaDoDia } from './DicaDoDia';
 import { NivelProgressoXP } from './NivelProgressoXP';
 import { ResumoDesempenhoGrafico } from './ResumoDesempenhoGrafico';
 
@@ -138,7 +139,7 @@ export const MissionHub: React.FC<Props> = ({
             </div>
             <p className="text-xs text-slate-600 mt-0.5">
               {studentName
-                ? `Turma: ${classroomName || '3º Ano A'} · Desempenho e medalhas sincronizados na nuvem`
+                ? `Turma: ${classroomName || '4º Ano A'} · Desempenho e medalhas sincronizados na nuvem`
                 : 'Você precisa se identificar e escolher sua turma para salvar estrelas e entrar no Ranking.'}
             </p>
           </div>
@@ -263,6 +264,12 @@ export const MissionHub: React.FC<Props> = ({
 
       {/* Level Progression & XP Bar */}
       <NivelProgressoXP score={score} />
+
+      {/* Dica do Dia: Sugestão de Tema Gramatical BNCC para preparação dos desafios */}
+      <DicaDoDia
+        onSelectMission={onSelectMission}
+        onBonusPoints={onBonusPoints}
+      />
 
       {/* Dica de Ouro Card */}
       <DicaDeOuro onBonusPoints={onBonusPoints} />

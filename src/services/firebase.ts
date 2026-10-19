@@ -85,78 +85,44 @@ export async function testFirestoreConnection(): Promise<boolean> {
 }
 
 // Pre-seeded classrooms for 3º Ano (A ao E) and 5º Ano (A ao E)
+export const OFFICIAL_SCHOOL_NAME = 'Escola Municipal Educandário Nossa Senhora Aparecida';
+
+// Pre-seeded classrooms for 3º Ano (A ao E), 4º Ano (A ao E) and 5º Ano (A ao E)
 export const INITIAL_CLASSROOMS: FirebaseClassroom[] = [
   // 3º Ano (A ao E)
   {
     id: 'turma-3a',
     name: '3º Ano A',
-    schoolName: 'Escola Municipal Monteiro Lobato',
+    schoolName: OFFICIAL_SCHOOL_NAME,
     teacherName: 'Prof.ª Helena Silveira',
     createdAt: new Date().toISOString(),
   },
   {
     id: 'turma-3b',
     name: '3º Ano B',
-    schoolName: 'Escola Municipal Monteiro Lobato',
+    schoolName: OFFICIAL_SCHOOL_NAME,
     teacherName: 'Prof. Marcos Vinícius',
     createdAt: new Date().toISOString(),
   },
   {
     id: 'turma-3c',
     name: '3º Ano C',
-    schoolName: 'Escola Municipal Monteiro Lobato',
+    schoolName: OFFICIAL_SCHOOL_NAME,
     teacherName: 'Prof.ª Camila Duarte',
     createdAt: new Date().toISOString(),
   },
   {
     id: 'turma-3d',
     name: '3º Ano D',
-    schoolName: 'Colégio Cecília Meireles',
+    schoolName: OFFICIAL_SCHOOL_NAME,
     teacherName: 'Prof.ª Juliana Costa',
     createdAt: new Date().toISOString(),
   },
   {
     id: 'turma-3e',
     name: '3º Ano E',
-    schoolName: 'Colégio Cecília Meireles',
+    schoolName: OFFICIAL_SCHOOL_NAME,
     teacherName: 'Prof. Roberto Dias',
-    createdAt: new Date().toISOString(),
-  },
-
-  // 5º Ano (A ao E)
-  {
-    id: 'turma-5a',
-    name: '5º Ano A',
-    schoolName: 'Escola Municipal Monteiro Lobato',
-    teacherName: 'Prof.ª Fernanda Souza',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'turma-5b',
-    name: '5º Ano B',
-    schoolName: 'Escola Municipal Monteiro Lobato',
-    teacherName: 'Prof. Carlos Eduardo',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'turma-5c',
-    name: '5º Ano C',
-    schoolName: 'Escola Municipal Monteiro Lobato',
-    teacherName: 'Prof.ª Mariana Rios',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'turma-5d',
-    name: '5º Ano D',
-    schoolName: 'Colégio Cecília Meireles',
-    teacherName: 'Prof. Paulo Ricardo',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'turma-5e',
-    name: '5º Ano E',
-    schoolName: 'Colégio Cecília Meireles',
-    teacherName: 'Prof.ª Aline Mendes',
     createdAt: new Date().toISOString(),
   },
 
@@ -164,36 +130,73 @@ export const INITIAL_CLASSROOMS: FirebaseClassroom[] = [
   {
     id: 'turma-4a',
     name: '4º Ano A',
-    schoolName: 'Escola Municipal Monteiro Lobato',
+    schoolName: OFFICIAL_SCHOOL_NAME,
     teacherName: 'Prof.ª Patrícia Ramos',
     createdAt: new Date().toISOString(),
   },
   {
     id: 'turma-4b',
     name: '4º Ano B',
-    schoolName: 'Escola Municipal Monteiro Lobato',
+    schoolName: OFFICIAL_SCHOOL_NAME,
     teacherName: 'Prof. André Martins',
     createdAt: new Date().toISOString(),
   },
   {
     id: 'turma-4c',
     name: '4º Ano C',
-    schoolName: 'Colégio Estadual Cecília Meireles',
+    schoolName: OFFICIAL_SCHOOL_NAME,
     teacherName: 'Prof.ª Mariana Rios',
     createdAt: new Date().toISOString(),
   },
   {
     id: 'turma-4d',
     name: '4º Ano D',
-    schoolName: 'Colégio Estadual Cecília Meireles',
+    schoolName: OFFICIAL_SCHOOL_NAME,
     teacherName: 'Prof. Thiago Neves',
     createdAt: new Date().toISOString(),
   },
   {
     id: 'turma-4e',
     name: '4º Ano E',
-    schoolName: 'Colégio Estadual Cecília Meireles',
+    schoolName: OFFICIAL_SCHOOL_NAME,
     teacherName: 'Prof.ª Renata Lima',
+    createdAt: new Date().toISOString(),
+  },
+
+  // 5º Ano (A ao E)
+  {
+    id: 'turma-5a',
+    name: '5º Ano A',
+    schoolName: OFFICIAL_SCHOOL_NAME,
+    teacherName: 'Prof.ª Fernanda Souza',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'turma-5b',
+    name: '5º Ano B',
+    schoolName: OFFICIAL_SCHOOL_NAME,
+    teacherName: 'Prof. Carlos Eduardo',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'turma-5c',
+    name: '5º Ano C',
+    schoolName: OFFICIAL_SCHOOL_NAME,
+    teacherName: 'Prof.ª Mariana Rios',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'turma-5d',
+    name: '5º Ano D',
+    schoolName: OFFICIAL_SCHOOL_NAME,
+    teacherName: 'Prof. Paulo Ricardo',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'turma-5e',
+    name: '5º Ano E',
+    schoolName: OFFICIAL_SCHOOL_NAME,
+    teacherName: 'Prof.ª Aline Mendes',
     createdAt: new Date().toISOString(),
   },
 ];
@@ -427,10 +430,23 @@ export async function fetchClassrooms(): Promise<FirebaseClassroom[]> {
     if (snap.empty) {
       return await seedClassroomsIfEmpty();
     }
-    const existing = snap.docs.map(d => d.data() as FirebaseClassroom);
+    const existing = snap.docs.map(d => {
+      const data = d.data() as FirebaseClassroom;
+      if (
+        data.id.startsWith('turma-') &&
+        (!data.schoolName ||
+          data.schoolName.includes('Monteiro') ||
+          data.schoolName.includes('Cecília') ||
+          data.schoolName === 'Escola Municipal')
+      ) {
+        data.schoolName = OFFICIAL_SCHOOL_NAME;
+        setDoc(doc(db, path, data.id), data).catch(() => {});
+      }
+      return data;
+    });
     const existingIds = new Set(existing.map(c => c.id));
 
-    // Check if standard 3º or 5º year classes are missing and upsert them
+    // Check if standard 3º, 4º or 5º year classes are missing and upsert them
     let missingFound = false;
     for (const c of INITIAL_CLASSROOMS) {
       if (!existingIds.has(c.id)) {
@@ -453,7 +469,7 @@ export async function fetchClassrooms(): Promise<FirebaseClassroom[]> {
 // Create a new classroom
 export async function createClassroom(
   name: string,
-  schoolName: string = 'Escola Municipal',
+  schoolName: string = OFFICIAL_SCHOOL_NAME,
   teacherName: string = 'Educador Responsável'
 ): Promise<FirebaseClassroom> {
   const cleanId = 'turma-' + Math.random().toString(36).substring(2, 9);

@@ -65,7 +65,7 @@ export const CertificadoConquista: React.FC<Props> = ({
       ? userStats.studentName
       : 'Estudante Exemplar'
   );
-  const [schoolName, setSchoolName] = useState('Escola Municipal de Ensino Fundamental');
+  const [schoolName, setSchoolName] = useState('Escola Municipal Educandário Nossa Senhora Aparecida');
   const [classroomName, setClassroomName] = useState(
     userStats.classroomName || '4º Ano A'
   );
@@ -461,7 +461,7 @@ export const CertificadoConquista: React.FC<Props> = ({
                       type="text"
                       value={schoolName}
                       onChange={e => setSchoolName(e.target.value)}
-                      placeholder="Ex: E.M.E.F. Monteiro Lobato"
+                      placeholder="Ex: Escola Municipal Educandário Nossa Senhora Aparecida"
                       className="w-full pl-9 pr-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 font-medium"
                     />
                   </div>

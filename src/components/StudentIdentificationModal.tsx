@@ -35,7 +35,7 @@ export const StudentIdentificationModal: React.FC<Props> = ({
   onContinueAsGuest,
 }) => {
   const [name, setName] = useState(currentStudentName);
-  const [classroomId, setClassroomId] = useState(currentClassroomId || 'turma-3a');
+  const [classroomId, setClassroomId] = useState(currentClassroomId || 'turma-4a');
   const [classrooms, setClassrooms] = useState<FirebaseClassroom[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreatingClass, setIsCreatingClass] = useState(false);
@@ -43,7 +43,7 @@ export const StudentIdentificationModal: React.FC<Props> = ({
   const [newSchoolName, setNewSchoolName] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [gradeFilter, setGradeFilter] = useState<'3' | '5' | '4' | 'all'>('3');
+  const [gradeFilter, setGradeFilter] = useState<'3' | '5' | '4' | 'all'>('4');
 
   const isFirstTime = !currentStudentName || currentStudentName.trim() === '';
 
@@ -52,12 +52,12 @@ export const StudentIdentificationModal: React.FC<Props> = ({
     if (currentClassroomId) {
       setClassroomId(currentClassroomId);
       // Auto-set grade filter if matching
-      if (currentClassroomId.includes('3') || currentClassroomId.startsWith('turma-3')) {
+      if (currentClassroomId.includes('4') || currentClassroomId.startsWith('turma-4')) {
+        setGradeFilter('4');
+      } else if (currentClassroomId.includes('3') || currentClassroomId.startsWith('turma-3')) {
         setGradeFilter('3');
       } else if (currentClassroomId.includes('5') || currentClassroomId.startsWith('turma-5')) {
         setGradeFilter('5');
-      } else if (currentClassroomId.includes('4') || currentClassroomId.startsWith('turma-4')) {
-        setGradeFilter('4');
       }
     }
   }, [currentStudentName, currentClassroomId]);
@@ -75,8 +75,8 @@ export const StudentIdentificationModal: React.FC<Props> = ({
       const list = await fetchClassrooms();
       setClassrooms(list);
       if (!classroomId && list.length > 0) {
-        // Default to 3º Ano A or 5º Ano A
-        const defaultClass = list.find(c => c.id === 'turma-3a') || list.find(c => c.id === 'turma-5a') || list[0];
+        // Default to 4º Ano A or 3º Ano A
+        const defaultClass = list.find(c => c.id === 'turma-4a') || list.find(c => c.id === 'turma-3a') || list[0];
         setClassroomId(defaultClass.id);
       }
     } catch (e) {
@@ -93,7 +93,7 @@ export const StudentIdentificationModal: React.FC<Props> = ({
     soundManager.playClick();
     setIsLoading(true);
     try {
-      const created = await createClassroom(newClassName, newSchoolName || 'Escola Municipal');
+      const created = await createClassroom(newClassName, newSchoolName || 'Escola Municipal Educandário Nossa Senhora Aparecida');
       setClassrooms(prev => [...prev, created]);
       setClassroomId(created.id);
       setIsCreatingClass(false);
@@ -116,8 +116,8 @@ export const StudentIdentificationModal: React.FC<Props> = ({
 
     soundManager.playCorrect();
     const selectedClass = classrooms.find(c => c.id === classroomId);
-    const chosenClassroomId = classroomId || 'turma-3a';
-    const chosenClassName = selectedClass ? selectedClass.name : '3º Ano A';
+    const chosenClassroomId = classroomId || 'turma-4a';
+    const chosenClassName = selectedClass ? selectedClass.name : '4º Ano A';
 
     onSaveIdentity(trimmedName, chosenClassroomId, chosenClassName);
   };
@@ -265,24 +265,8 @@ export const StudentIdentificationModal: React.FC<Props> = ({
                 </button>
               </div>
 
-              {/* Grade Filter Tabs (3º Ano, 4º Ano ou 5º Ano) */}
+              {/* Grade Filter Tabs (4º Ano, 3º Ano, 5º Ano ou Todas) */}
               <div className="grid grid-cols-4 gap-1.5 bg-slate-100 p-1 rounded-xl">
-                <button
-                  type="button"
-                  onClick={() => {
-                    soundManager.playClick();
-                    setGradeFilter('3');
-                    const target = classrooms.find(c => c.id === 'turma-3a');
-                    if (target) setClassroomId(target.id);
-                  }}
-                  className={`py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                    gradeFilter === '3'
-                      ? 'bg-white text-indigo-700 shadow-xs ring-1 ring-slate-200'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  📘 3º Ano
-                </button>
                 <button
                   type="button"
                   onClick={() => {
@@ -303,13 +287,29 @@ export const StudentIdentificationModal: React.FC<Props> = ({
                   type="button"
                   onClick={() => {
                     soundManager.playClick();
+                    setGradeFilter('3');
+                    const target = classrooms.find(c => c.id === 'turma-3a');
+                    if (target) setClassroomId(target.id);
+                  }}
+                  className={`py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                    gradeFilter === '3'
+                      ? 'bg-white text-indigo-700 shadow-xs ring-1 ring-slate-200'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  📘 3º Ano
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
                     setGradeFilter('5');
                     const target = classrooms.find(c => c.id === 'turma-5a');
                     if (target) setClassroomId(target.id);
                   }}
                   className={`py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                     gradeFilter === '5'
-                      ? 'bg-white text-indigo-700 shadow-xs ring-1 ring-slate-200'
+                      ? 'bg-white text-amber-700 shadow-xs ring-1 ring-slate-200'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
@@ -465,7 +465,7 @@ export const StudentIdentificationModal: React.FC<Props> = ({
                 type="text"
                 value={newSchoolName}
                 onChange={e => setNewSchoolName(e.target.value)}
-                placeholder="Escola (Ex: E.M. Paulo Freire)"
+                placeholder="Escola (Ex: Escola Municipal Educandário Nossa Senhora Aparecida)"
                 className="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs focus:outline-none focus:border-indigo-600 bg-white"
               />
 

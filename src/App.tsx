@@ -264,6 +264,7 @@ export default function App() {
         starsCount={stats.starsEarned}
         score={stats.score}
         studentName={stats.studentName}
+        classroomName={stats.classroomName}
         isMuted={isMuted}
         onToggleMute={handleToggleMute}
         onOpenRules={() => setIsRulesModalOpen(true)}
@@ -470,7 +471,7 @@ export default function App() {
               setPendingMission(null);
             }}
             currentStudentName={stats.studentName || ''}
-            currentClassroomId={stats.classroomId || 'turma-3a'}
+            currentClassroomId={stats.classroomId || 'turma-4a'}
             onSaveIdentity={handleSaveIdentity}
             pendingMissionName={pendingMission ? missionDisplayNames[pendingMission] || pendingMission : null}
             onContinueAsGuest={() => {
