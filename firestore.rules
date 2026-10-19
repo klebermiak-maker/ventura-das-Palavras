@@ -1,0 +1,77 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 64 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidClassroom(data) {
+      return data.keys().hasAll(['id', 'name'])
+        && data.keys().hasOnly(['id', 'name', 'schoolName', 'teacherName', 'createdAt'])
+        && data.id is string && data.id.size() > 0 && data.id.size() <= 64
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 100
+        && (!('schoolName' in data) || (data.schoolName is string && data.schoolName.size() <= 120))
+        && (!('teacherName' in data) || (data.teacherName is string && data.teacherName.size() <= 100))
+        && (!('createdAt' in data) || data.createdAt is string);
+    }
+
+    function isValidStudentPerformance(data) {
+      return data.keys().hasAll(['studentId', 'studentName', 'classroomId', 'score', 'starsEarned'])
+        && data.studentId is string && data.studentId.size() > 0 && data.studentId.size() <= 64
+        && data.studentName is string && data.studentName.size() > 0 && data.studentName.size() <= 100
+        && data.classroomId is string && data.classroomId.size() > 0 && data.classroomId.size() <= 64
+        && data.score is number && data.score >= 0
+        && data.starsEarned is number && data.starsEarned >= 0
+        && (!('levelNumber' in data) || (data.levelNumber is number && data.levelNumber >= 1 && data.levelNumber <= 6))
+        && (!('levelTitle' in data) || (data.levelTitle is string && data.levelTitle.size() <= 64))
+        && (!('badgesCount' in data) || (data.badgesCount is number && data.badgesCount >= 0))
+        && (!('ef15lp03_correct' in data) || data.ef15lp03_correct is number)
+        && (!('ef15lp03_attempted' in data) || data.ef15lp03_attempted is number)
+        && (!('ef35lp03_correct' in data) || data.ef35lp03_correct is number)
+        && (!('ef35lp03_attempted' in data) || data.ef35lp03_attempted is number)
+        && (!('ef35lp04_correct' in data) || data.ef35lp04_correct is number)
+        && (!('ef35lp04_attempted' in data) || data.ef35lp04_attempted is number)
+        && (!('ef05lp03_correct' in data) || data.ef05lp03_correct is number)
+        && (!('ef05lp03_attempted' in data) || data.ef05lp03_attempted is number)
+        && (!('updatedAt' in data) || data.updatedAt is string);
+    }
+
+    // Classrooms collection
+    match /classrooms/{classroomId} {
+      allow get, list: if isValidId(classroomId);
+      allow create: if isValidId(classroomId) && isValidClassroom(incoming());
+      allow update: if isValidId(classroomId) && isValidClassroom(incoming())
+                    && incoming().id == existing().id;
+      allow delete: if false;
+
+      // Students subcollection under each classroom
+      match /students/{studentId} {
+        allow get, list: if isValidId(studentId) && isValidId(classroomId);
+        allow create: if isValidId(studentId) && isValidId(classroomId)
+                      && isValidStudentPerformance(incoming())
+                      && incoming().classroomId == classroomId;
+        allow update: if isValidId(studentId) && isValidId(classroomId)
+                      && isValidStudentPerformance(incoming())
+                      && incoming().studentId == existing().studentId
+                      && incoming().classroomId == classroomId;
+        allow delete: if false;
+      }
+    }
+  }
+}

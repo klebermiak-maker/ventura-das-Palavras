@@ -1,0 +1,6 @@
+{
+  "name": "Aventura das Palavras - BNCC 4º Ano",
+  "description": "Jogo interativo de Língua Portuguesa para o 4º ano do Ensino Fundamental com as habilidades da BNCC EF15LP03, EF35LP03, EF35LP04 e EF05LP03.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

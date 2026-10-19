@@ -1,0 +1,108 @@
+{
+  "entities": {
+    "Classroom": {
+      "title": "Classroom",
+      "description": "Uma turma escolar do 4º ano do Ensino Fundamental",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identificador único da turma",
+          "maxLength": 64
+        },
+        "name": {
+          "type": "string",
+          "description": "Nome da turma (ex: 4º Ano A - Matutino)",
+          "maxLength": 100
+        },
+        "schoolName": {
+          "type": "string",
+          "description": "Nome da instituição escolar",
+          "maxLength": 120
+        },
+        "teacherName": {
+          "type": "string",
+          "description": "Nome do professor responsável",
+          "maxLength": 100
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Data de criação da turma"
+        }
+      },
+      "required": ["id", "name"]
+    },
+    "StudentPerformance": {
+      "title": "StudentPerformance",
+      "description": "Registro de identificação e desempenho individual do estudante do 4º ano",
+      "type": "object",
+      "properties": {
+        "studentId": {
+          "type": "string",
+          "description": "Identificador do aluno",
+          "maxLength": 64
+        },
+        "studentName": {
+          "type": "string",
+          "description": "Nome completo do estudante",
+          "maxLength": 100
+        },
+        "classroomId": {
+          "type": "string",
+          "description": "ID da turma vinculada",
+          "maxLength": 64
+        },
+        "score": {
+          "type": "number",
+          "description": "Pontuação total acumulada"
+        },
+        "starsEarned": {
+          "type": "number",
+          "description": "Total de estrelas douradas conquistadas"
+        },
+        "levelNumber": {
+          "type": "number",
+          "description": "Nível de progressão do aluno (1 a 6)"
+        },
+        "levelTitle": {
+          "type": "string",
+          "description": "Título do nível (ex: Aprendiz Curioso, Mestre Supremo)",
+          "maxLength": 64
+        },
+        "badgesCount": {
+          "type": "number",
+          "description": "Total de medalhas ganhas"
+        },
+        "ef15lp03_correct": { "type": "number", "description": "Acertos em EF15LP03" },
+        "ef15lp03_attempted": { "type": "number", "description": "Tentativas em EF15LP03" },
+        "ef35lp03_correct": { "type": "number", "description": "Acertos em EF35LP03" },
+        "ef35lp03_attempted": { "type": "number", "description": "Tentativas em EF35LP03" },
+        "ef35lp04_correct": { "type": "number", "description": "Acertos em EF35LP04" },
+        "ef35lp04_attempted": { "type": "number", "description": "Tentativas em EF35LP04" },
+        "ef05lp03_correct": { "type": "number", "description": "Acertos em EF05LP03" },
+        "ef05lp03_attempted": { "type": "number", "description": "Tentativas em EF05LP03" },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Data da última sincronização do estudante"
+        }
+      },
+      "required": ["studentId", "studentName", "classroomId", "score", "starsEarned"]
+    }
+  },
+  "firestore": {
+    "/classrooms/{classroomId}": {
+      "schema": {
+        "$ref": "#/entities/Classroom"
+      },
+      "description": "Coleção de turmas cadastradas para acompanhamento pedagógico"
+    },
+    "/classrooms/{classroomId}/students/{studentId}": {
+      "schema": {
+        "$ref": "#/entities/StudentPerformance"
+      },
+      "description": "Subcoleção contendo as notas e métricas de desempenho de cada aluno na turma"
+    }
+  }
+}
