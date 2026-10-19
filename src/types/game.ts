@@ -89,6 +89,7 @@ export interface UserStats {
     correct: number;
   }>;
   badgesEarned: string[];
+  recentBadges?: string[];
   lastPlayedDate?: string;
   studentName?: string;
   classroomId?: string;

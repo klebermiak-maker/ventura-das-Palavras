@@ -6,13 +6,15 @@ import { soundManager } from '../utils/audio';
 
 export interface CelebrationData {
   isOpen: boolean;
-  type: 'correct' | 'level_up' | 'mission_complete';
+  type: 'correct' | 'level_up' | 'mission_complete' | 'badge_unlock';
   title: string;
   subtitle: string;
   points?: number;
   stars?: number;
   levelTitle?: string;
   levelIcon?: string;
+  badgeName?: string;
+  badgeIcon?: string;
 }
 
 interface Props {
@@ -23,22 +25,22 @@ interface Props {
 export const CelebrationOverlay: React.FC<Props> = ({ data, onClose }) => {
   useEffect(() => {
     if (data?.isOpen) {
-      if (data.type === 'level_up' || data.type === 'mission_complete') {
+      if (data.type === 'level_up' || data.type === 'mission_complete' || data.type === 'badge_unlock') {
         soundManager.playFanfare();
         // Grand multi-burst confetti
-        const end = Date.now() + 1200;
+        const end = Date.now() + 1400;
         const interval: ReturnType<typeof setInterval> = setInterval(() => {
           if (Date.now() > end) {
             clearInterval(interval);
             return;
           }
           confetti({
-            startVelocity: 30,
+            startVelocity: 35,
             spread: 360,
-            ticks: 60,
+            ticks: 70,
             origin: { x: Math.random(), y: Math.random() - 0.2 },
           });
-        }, 200);
+        }, 180);
       } else {
         soundManager.playCorrect();
         confetti({
@@ -48,10 +50,10 @@ export const CelebrationOverlay: React.FC<Props> = ({ data, onClose }) => {
         });
       }
 
-      // Auto dismiss after 2.6s for standard answers, or 4s for level up
+      // Auto dismiss after 2.6s for standard answers, or 4.2s for level up and badge unlock
       const timer = setTimeout(() => {
         onClose();
-      }, data.type === 'level_up' ? 3800 : 2600);
+      }, data.type === 'level_up' || data.type === 'badge_unlock' ? 4200 : 2600);
 
       return () => clearTimeout(timer);
     }
@@ -61,6 +63,7 @@ export const CelebrationOverlay: React.FC<Props> = ({ data, onClose }) => {
 
   const isLevelUp = data.type === 'level_up';
   const isMissionComplete = data.type === 'mission_complete';
+  const isBadgeUnlock = data.type === 'badge_unlock';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
@@ -69,7 +72,7 @@ export const CelebrationOverlay: React.FC<Props> = ({ data, onClose }) => {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 bg-slate-900/40 backdrop-blur-xs pointer-events-auto"
+        className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs pointer-events-auto"
         onClick={onClose}
       />
 
@@ -88,15 +91,49 @@ export const CelebrationOverlay: React.FC<Props> = ({ data, onClose }) => {
         }}
         exit={{ opacity: 0, scale: 0.8, y: -20, transition: { duration: 0.2 } }}
         className={`relative z-10 pointer-events-auto max-w-sm w-full rounded-3xl p-6 sm:p-8 text-center shadow-2xl border ${
-          isLevelUp
+          isBadgeUnlock
+            ? 'bg-gradient-to-b from-amber-950 via-slate-900 to-indigo-950 border-amber-400 text-white ring-4 ring-amber-400/40'
+            : isLevelUp
             ? 'bg-gradient-to-b from-indigo-900 via-slate-900 to-indigo-950 border-amber-400/80 text-white ring-4 ring-amber-400/30'
             : isMissionComplete
             ? 'bg-gradient-to-b from-slate-900 to-emerald-950 border-emerald-400/80 text-white ring-4 ring-emerald-400/30'
             : 'bg-white border-emerald-200 text-slate-900 ring-4 ring-emerald-100'
         }`}
       >
+        {/* Glowing Aura for Badges & Levels */}
+        {(isBadgeUnlock || isLevelUp) && (
+          <motion.div
+            animate={{
+              opacity: [0.3, 0.7, 0.3],
+              scale: [0.95, 1.05, 0.95],
+            }}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: 'easeInOut',
+            }}
+            className="absolute inset-0 rounded-3xl bg-radial from-amber-500/20 via-transparent to-transparent pointer-events-none"
+          />
+        )}
+
         {/* Floating Badge Icon */}
         <div className="relative flex justify-center mb-4">
+          {/* Pulsing halo */}
+          {isBadgeUnlock && (
+            <motion.div
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.6, 1, 0.6],
+              }}
+              transition={{
+                duration: 1.8,
+                repeat: Infinity,
+                ease: 'easeInOut',
+              }}
+              className="absolute w-24 h-24 rounded-full bg-amber-400/30 blur-md"
+            />
+          )}
+
           <motion.div
             initial={{ scale: 0, rotate: -40 }}
             animate={{
@@ -104,15 +141,19 @@ export const CelebrationOverlay: React.FC<Props> = ({ data, onClose }) => {
               rotate: [0, 10, 0],
               transition: { delay: 0.1, type: 'spring', stiffness: 300, damping: 15 },
             }}
-            className={`w-20 h-20 rounded-3xl flex items-center justify-center text-4xl shadow-lg border-2 ${
-              isLevelUp
+            className={`w-20 h-20 rounded-3xl flex items-center justify-center text-4xl shadow-lg border-2 relative z-10 ${
+              isBadgeUnlock
+                ? 'bg-gradient-to-br from-amber-400 via-yellow-300 to-amber-600 border-amber-200 text-white shadow-amber-500/50'
+                : isLevelUp
                 ? 'bg-gradient-to-br from-amber-400 to-amber-600 border-amber-200 text-white shadow-amber-500/30'
                 : isMissionComplete
                 ? 'bg-gradient-to-br from-emerald-400 to-emerald-600 border-emerald-200 text-white shadow-emerald-500/30'
                 : 'bg-gradient-to-br from-emerald-500 to-teal-600 border-emerald-200 text-white shadow-emerald-500/20'
             }`}
           >
-            {isLevelUp ? (
+            {isBadgeUnlock ? (
+              <span>{data.badgeIcon || '🏅'}</span>
+            ) : isLevelUp ? (
               <span>{data.levelIcon || '🌟'}</span>
             ) : isMissionComplete ? (
               <Trophy className="w-10 h-10 text-white" />
@@ -123,16 +164,33 @@ export const CelebrationOverlay: React.FC<Props> = ({ data, onClose }) => {
         </div>
 
         {/* Title & Tagline */}
-        <div className="space-y-1.5">
+        <div className="space-y-1.5 relative z-10">
           <motion.p
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className={`text-xs font-mono font-bold tracking-widest uppercase ${
-              isLevelUp ? 'text-amber-400' : isMissionComplete ? 'text-emerald-400' : 'text-emerald-700'
+            className={`text-xs font-mono font-bold tracking-widest uppercase flex items-center justify-center gap-1.5 ${
+              isBadgeUnlock
+                ? 'text-amber-300'
+                : isLevelUp
+                ? 'text-amber-400'
+                : isMissionComplete
+                ? 'text-emerald-400'
+                : 'text-emerald-700'
             }`}
           >
-            {isLevelUp ? 'NOVO NÍVEL ALCANÇADO!' : isMissionComplete ? 'MISSÃO CUMPRIDA!' : 'PARABÉNS! ACERTOU!'}
+            {isBadgeUnlock ? (
+              <>
+                <Sparkles className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
+                <span>NOVA MEDALHA CONQUISTADA!</span>
+              </>
+            ) : isLevelUp ? (
+              'NOVO NÍVEL ALCANÇADO!'
+            ) : isMissionComplete ? (
+              'MISSÃO CUMPRIDA!'
+            ) : (
+              'PARABÉNS! ACERTOU!'
+            )}
           </motion.p>
 
           <motion.h3
@@ -140,10 +198,10 @@ export const CelebrationOverlay: React.FC<Props> = ({ data, onClose }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className={`text-2xl sm:text-3xl font-extrabold font-display ${
-              isLevelUp || isMissionComplete ? 'text-white' : 'text-slate-900'
+              isBadgeUnlock || isLevelUp || isMissionComplete ? 'text-white' : 'text-slate-900'
             }`}
           >
-            {data.title}
+            {data.badgeName || data.title}
           </motion.h3>
 
           <motion.p

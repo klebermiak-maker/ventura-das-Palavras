@@ -7,6 +7,7 @@ import { DicaDeOuro } from './DicaDeOuro';
 import { DicaDoDia } from './DicaDoDia';
 import { NivelProgressoXP } from './NivelProgressoXP';
 import { ResumoDesempenhoGrafico } from './ResumoDesempenhoGrafico';
+import { PainelMedalhas } from './PainelMedalhas';
 
 interface Props {
   onSelectMission: (missionId: string) => void;
@@ -14,11 +15,14 @@ interface Props {
   score: number;
   skillStats: Record<string, { attempted: number; correct: number }>;
   badgesEarned: string[];
+  recentBadges?: string[];
   studentName?: string;
   classroomName?: string;
   onOpenRules: () => void;
   onOpenIdentityModal?: () => void;
   onBonusPoints?: (points: number) => void;
+  onAcknowledgeBadge?: (badgeId: string) => void;
+  onSimulateBadgeUnlock?: (badgeId: string) => void;
 }
 
 const containerVariants: Variants = {
@@ -42,11 +46,14 @@ export const MissionHub: React.FC<Props> = ({
   score,
   skillStats,
   badgesEarned,
+  recentBadges = [],
   studentName,
   classroomName,
   onOpenRules,
   onOpenIdentityModal,
   onBonusPoints,
+  onAcknowledgeBadge,
+  onSimulateBadgeUnlock,
 }) => {
   const missions = [
     {
@@ -91,13 +98,7 @@ export const MissionHub: React.FC<Props> = ({
     },
   ];
 
-  const badges = [
-    { id: 'EF15LP03', name: 'Detetive de Fatos', icon: '🔍', desc: 'Acertou perguntas explícitas' },
-    { id: 'EF35LP03', name: 'Mestre da Ideia Central', icon: '🧭', desc: 'Identificou o tema global' },
-    { id: 'EF35LP04', name: 'Mago das Entrelinhas', icon: '🕵️', desc: 'Fez deduções precisas' },
-    { id: 'EF05LP03', name: 'Campeão da Acentuação', icon: '⚡', desc: 'Classificou tônicas e acentos' },
-    { id: 'MESTRE', name: 'Mestre da Língua Portuguesa', icon: '🏆', desc: 'Conquistou mais de 5 estrelas' },
-  ];
+
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12">
@@ -515,78 +516,16 @@ export const MissionHub: React.FC<Props> = ({
         onNavigateToReport={() => onSelectMission('relatorio')}
       />
 
-      {/* Badges / Conquistas Section */}
-      <section className="bg-slate-50 rounded-2xl border border-slate-200 p-6 sm:p-8 space-y-6">
-        <div>
-          <h2 className="text-xl font-bold text-slate-900 font-display flex items-center gap-2">
-            <Award className="w-5 h-5 text-amber-500" />
-            <span>Medalhas & Distintivos de Conquista</span>
-          </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
-            Demonstre domínio em cada habilidade para desbloquear as medalhas de honra
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-          {badges.map(b => {
-            const isUnlocked = badgesEarned.includes(b.id) || (b.id === 'MESTRE' && starsCount >= 5);
-            return (
-              <motion.div
-                key={b.id}
-                whileHover={{ scale: 1.03 }}
-                className={`p-4 rounded-xl border text-center transition-all flex flex-col items-center justify-center space-y-2 ${
-                  isUnlocked
-                    ? 'bg-white border-amber-300 shadow-xs ring-2 ring-amber-100'
-                    : 'bg-slate-100/60 border-slate-200 opacity-60'
-                }`}
-              >
-                <div className="text-3xl sm:text-4xl">
-                  {b.icon}
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-slate-900 font-display">
-                    {b.name}
-                  </p>
-                  <p className="text-[11px] text-slate-500 mt-0.5">
-                    {isUnlocked ? 'Desbloqueada!' : b.desc}
-                  </p>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-
-        {/* Certificate CTA Banner */}
-        <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-amber-50/70 p-4 rounded-xl border border-amber-200">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-xl shrink-0 shadow-xs">
-              🎖️
-            </div>
-            <div>
-              <h4 className="text-sm font-bold text-slate-900 font-display">
-                Certificado Oficial de Conquista & Proficiência
-              </h4>
-              <p className="text-xs text-slate-600">
-                Gere e baixe seu PDF personalizado exibindo suas medalhas, estrelas e pontuação total de {score} XP.
-              </p>
-            </div>
-          </div>
-
-          <motion.button
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => {
-              soundManager.playClick();
-              onSelectMission('certificado');
-            }}
-            className="px-4 py-2.5 bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 text-white font-bold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
-          >
-            <Award className="w-4 h-4 text-amber-200" />
-            <span>Emitir Meu Certificado</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </motion.button>
-        </div>
-      </section>
+      {/* Badges / Conquistas Section with Glowing & Pulsing Framer Motion animations */}
+      <PainelMedalhas
+        badgesEarned={badgesEarned}
+        recentBadges={recentBadges}
+        starsCount={starsCount}
+        score={score}
+        onSelectMission={onSelectMission}
+        onAcknowledgeBadge={onAcknowledgeBadge}
+        onSimulateBadgeUnlock={onSimulateBadgeUnlock}
+      />
     </div>
   );
 };

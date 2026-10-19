@@ -121,27 +121,16 @@ export default function App() {
     const oldTier = getPlayerLevelInfo(oldScore).currentTier;
     const newTier = getPlayerLevelInfo(newScore).currentTier;
 
-    if (newTier.level > oldTier.level) {
-      setCelebrationData({
-        isOpen: true,
-        type: 'level_up',
-        title: `Nível ${newTier.level}: ${newTier.title}!`,
-        subtitle: newTier.perkDescription,
-        points,
-        stars,
-        levelTitle: newTier.title,
-        levelIcon: newTier.icon,
-      });
-    } else if (isCorrect) {
-      setCelebrationData({
-        isOpen: true,
-        type: 'correct',
-        title: 'Resposta Exata!',
-        subtitle: 'Você demonstrou excelente raciocínio leitor!',
-        points,
-        stars,
-      });
-    }
+    const badgeMap: Record<string, { name: string; icon: string }> = {
+      EF15LP03: { name: 'Detetive de Fatos', icon: '🔍' },
+      EF35LP03: { name: 'Mestre da Ideia Central', icon: '🧭' },
+      EF35LP04: { name: 'Mago das Entrelinhas', icon: '🕵️' },
+      EF05LP03: { name: 'Campeão da Acentuação', icon: '⚡' },
+      MESTRE: { name: 'Mestre da Língua Portuguesa', icon: '🏆' },
+      SPRINT_MASTER: { name: 'Velocista das Palavras', icon: '🔥' },
+    };
+
+    let newlyUnlockedBadgeInfo: { name: string; icon: string } | null = null;
 
     setStats(prev => {
       const currentSkillStat = prev.skillStats[skill] || { attempted: 0, correct: 0 };
@@ -155,14 +144,25 @@ export default function App() {
       };
 
       const updatedBadges = [...prev.badgesEarned];
+      const newlyEarnedIds: string[] = [];
+
       if (isCorrect && !updatedBadges.includes(skill)) {
         updatedBadges.push(skill);
+        newlyEarnedIds.push(skill);
       }
       if (prev.starsEarned + stars >= 5 && !updatedBadges.includes('MESTRE')) {
         updatedBadges.push('MESTRE');
+        newlyEarnedIds.push('MESTRE');
       }
 
-      const updatedStats = {
+      if (newlyEarnedIds.length > 0) {
+        const lastId = newlyEarnedIds[newlyEarnedIds.length - 1];
+        newlyUnlockedBadgeInfo = badgeMap[lastId] || { name: 'Nova Medalha!', icon: '🏅' };
+      }
+
+      const updatedRecentBadges = Array.from(new Set([...(prev.recentBadges || []), ...newlyEarnedIds]));
+
+      const updatedStats: UserStats = {
         ...prev,
         score: prev.score + points,
         starsEarned: prev.starsEarned + stars,
@@ -172,10 +172,67 @@ export default function App() {
         },
         skillStats: updatedSkillStats,
         badgesEarned: updatedBadges,
+        recentBadges: updatedRecentBadges,
       };
 
       syncToFirebaseIfIdentified(updatedStats);
       return updatedStats;
+    });
+
+    if (newTier.level > oldTier.level) {
+      setCelebrationData({
+        isOpen: true,
+        type: 'level_up',
+        title: `Nível ${newTier.level}: ${newTier.title}!`,
+        subtitle: newTier.perkDescription,
+        points,
+        stars,
+        levelTitle: newTier.title,
+        levelIcon: newTier.icon,
+      });
+    } else if (newlyUnlockedBadgeInfo) {
+      const info = newlyUnlockedBadgeInfo as { name: string; icon: string };
+      setCelebrationData({
+        isOpen: true,
+        type: 'badge_unlock',
+        title: info.name,
+        subtitle: 'Você desbloqueou um novo emblema! Veja a animação de brilho no painel do jogador.',
+        points,
+        stars,
+        badgeName: info.name,
+        badgeIcon: info.icon,
+      });
+    } else if (isCorrect) {
+      setCelebrationData({
+        isOpen: true,
+        type: 'correct',
+        title: 'Resposta Exata!',
+        subtitle: 'Você demonstrou excelente raciocínio leitor!',
+        points,
+        stars,
+      });
+    }
+  };
+
+  const handleAcknowledgeBadge = (badgeId: string) => {
+    setStats(prev => {
+      const updated: UserStats = {
+        ...prev,
+        recentBadges: (prev.recentBadges || []).filter(id => id !== badgeId),
+      };
+      return updated;
+    });
+  };
+
+  const handleSimulateBadgeUnlock = (badgeId: string) => {
+    setStats(prev => {
+      const updated: UserStats = {
+        ...prev,
+        badgesEarned: Array.from(new Set([...prev.badgesEarned, badgeId])),
+        recentBadges: Array.from(new Set([...(prev.recentBadges || []), badgeId])),
+      };
+      syncToFirebaseIfIdentified(updated);
+      return updated;
     });
   };
 
@@ -289,11 +346,14 @@ export default function App() {
                 score={stats.score}
                 skillStats={stats.skillStats}
                 badgesEarned={stats.badgesEarned}
+                recentBadges={stats.recentBadges || []}
                 studentName={stats.studentName}
                 classroomName={stats.classroomName}
                 onOpenRules={() => setIsRulesModalOpen(true)}
                 onOpenIdentityModal={() => setIsIdentityModalOpen(true)}
                 onBonusPoints={handleBonusPoints}
+                onAcknowledgeBadge={handleAcknowledgeBadge}
+                onSimulateBadgeUnlock={handleSimulateBadgeUnlock}
               />
             </motion.div>
           )}
