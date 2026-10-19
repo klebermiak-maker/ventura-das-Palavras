@@ -14,7 +14,7 @@ import { CertificadoConquista } from './components/CertificadoConquista';
 import { StudentIdentificationModal } from './components/StudentIdentificationModal';
 import { RegrasAcentuacaoModal } from './components/RegrasAcentuacaoModal';
 import { CelebrationOverlay, CelebrationData } from './components/CelebrationOverlay';
-import { BNCCSkill, UserStats } from './types/game';
+import { BNCCSkill, UserStats, ActivityLogItem } from './types/game';
 import { soundManager } from './utils/audio';
 import { getPlayerLevelInfo } from './utils/levels';
 import {
@@ -35,9 +35,11 @@ const defaultStats: UserStats = {
     EF05LP03: { attempted: 0, correct: 0 },
   },
   badgesEarned: [],
+  recentBadges: [],
+  activityHistory: [],
   studentName: '',
-  classroomId: 'turma-3a',
-  classroomName: '3º Ano A',
+  classroomId: 'turma-4a',
+  classroomName: '4º Ano A',
 };
 
 const viewTransitionVariants: Variants = {
@@ -162,6 +164,31 @@ export default function App() {
 
       const updatedRecentBadges = Array.from(new Set([...(prev.recentBadges || []), ...newlyEarnedIds]));
 
+      // Log mission to activity history for tracking daily progress
+      const missionMap: Record<string, { missionId: string; title: string; icon: string }> = {
+        EF15LP03: { missionId: 'explicitas', title: 'Detetive dos Fatos', icon: '🔍' },
+        EF35LP03: { missionId: 'central', title: 'A Bússola do Tema', icon: '🧭' },
+        EF35LP04: { missionId: 'implicitas', title: 'Mago das Entrelinhas', icon: '🕵️' },
+        EF05LP03: { missionId: 'acentuacao', title: 'Usina dos Acentos', icon: '⚡' },
+      };
+
+      const meta = missionMap[skill] || { missionId: 'explicitas', title: 'Missão BNCC', icon: '🎯' };
+      const now = new Date();
+      const newActivity: ActivityLogItem = {
+        id: `act-${now.getTime()}-${Math.random().toString(36).substring(2, 6)}`,
+        missionId: meta.missionId,
+        missionTitle: meta.title,
+        skillCode: skill,
+        icon: meta.icon,
+        scoreEarned: points,
+        starsEarned: stars,
+        completedAt: now.toISOString(),
+        formattedDate: `Hoje às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
+        questionsAnswered: 1,
+      };
+
+      const updatedActivityHistory = [newActivity, ...(prev.activityHistory || [])].slice(0, 15);
+
       const updatedStats: UserStats = {
         ...prev,
         score: prev.score + points,
@@ -173,6 +200,7 @@ export default function App() {
         skillStats: updatedSkillStats,
         badgesEarned: updatedBadges,
         recentBadges: updatedRecentBadges,
+        activityHistory: updatedActivityHistory,
       };
 
       syncToFirebaseIfIdentified(updatedStats);
@@ -230,6 +258,40 @@ export default function App() {
         ...prev,
         badgesEarned: Array.from(new Set([...prev.badgesEarned, badgeId])),
         recentBadges: Array.from(new Set([...(prev.recentBadges || []), badgeId])),
+      };
+      syncToFirebaseIfIdentified(updated);
+      return updated;
+    });
+  };
+
+  const handleAddSampleActivity = () => {
+    const samples = [
+      { missionId: 'sprint', title: 'Sprint Relâmpago das Palavras', icon: '🔥', skill: 'EF05LP03', score: 140, stars: 1 },
+      { missionId: 'explicitas', title: 'Detetive dos Fatos', icon: '🔍', skill: 'EF15LP03', score: 100, stars: 1 },
+      { missionId: 'acentuacao', title: 'Usina dos Acentos', icon: '⚡', skill: 'EF05LP03', score: 120, stars: 1 },
+      { missionId: 'central', title: 'A Bússola do Tema', icon: '🧭', skill: 'EF35LP03', score: 100, stars: 1 },
+      { missionId: 'implicitas', title: 'Mago das Entrelinhas', icon: '🕵️', skill: 'EF35LP04', score: 100, stars: 1 },
+    ];
+    const pick = samples[Math.floor(Math.random() * samples.length)];
+    const now = new Date();
+    const newItem: ActivityLogItem = {
+      id: `sample-${now.getTime()}`,
+      missionId: pick.missionId,
+      missionTitle: pick.title,
+      skillCode: pick.skill,
+      icon: pick.icon,
+      scoreEarned: pick.score,
+      starsEarned: pick.stars,
+      completedAt: now.toISOString(),
+      formattedDate: `Hoje às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
+      questionsAnswered: 3,
+    };
+    setStats(prev => {
+      const updated: UserStats = {
+        ...prev,
+        score: prev.score + pick.score,
+        starsEarned: prev.starsEarned + pick.stars,
+        activityHistory: [newItem, ...(prev.activityHistory || [])].slice(0, 15),
       };
       syncToFirebaseIfIdentified(updated);
       return updated;
@@ -354,6 +416,8 @@ export default function App() {
                 onBonusPoints={handleBonusPoints}
                 onAcknowledgeBadge={handleAcknowledgeBadge}
                 onSimulateBadgeUnlock={handleSimulateBadgeUnlock}
+                activityHistory={stats.activityHistory || []}
+                onAddSampleActivity={handleAddSampleActivity}
               />
             </motion.div>
           )}

@@ -8,6 +8,8 @@ import { DicaDoDia } from './DicaDoDia';
 import { NivelProgressoXP } from './NivelProgressoXP';
 import { ResumoDesempenhoGrafico } from './ResumoDesempenhoGrafico';
 import { PainelMedalhas } from './PainelMedalhas';
+import { HistoricoAtividades } from './HistoricoAtividades';
+import { ActivityLogItem } from '../types/game';
 
 interface Props {
   onSelectMission: (missionId: string) => void;
@@ -16,6 +18,7 @@ interface Props {
   skillStats: Record<string, { attempted: number; correct: number }>;
   badgesEarned: string[];
   recentBadges?: string[];
+  activityHistory?: ActivityLogItem[];
   studentName?: string;
   classroomName?: string;
   onOpenRules: () => void;
@@ -23,6 +26,7 @@ interface Props {
   onBonusPoints?: (points: number) => void;
   onAcknowledgeBadge?: (badgeId: string) => void;
   onSimulateBadgeUnlock?: (badgeId: string) => void;
+  onAddSampleActivity?: () => void;
 }
 
 const containerVariants: Variants = {
@@ -47,6 +51,7 @@ export const MissionHub: React.FC<Props> = ({
   skillStats,
   badgesEarned,
   recentBadges = [],
+  activityHistory = [],
   studentName,
   classroomName,
   onOpenRules,
@@ -54,6 +59,7 @@ export const MissionHub: React.FC<Props> = ({
   onBonusPoints,
   onAcknowledgeBadge,
   onSimulateBadgeUnlock,
+  onAddSampleActivity,
 }) => {
   const missions = [
     {
@@ -509,6 +515,13 @@ export const MissionHub: React.FC<Props> = ({
           </motion.button>
         </motion.div>
       </section>
+
+      {/* Histórico das Últimas 5 Atividades & Progresso Diário */}
+      <HistoricoAtividades
+        activityHistory={activityHistory}
+        onSelectMission={onSelectMission}
+        onAddSampleActivity={onAddSampleActivity}
+      />
 
       {/* BNCC Skills Performance Bar Chart Summary */}
       <ResumoDesempenhoGrafico

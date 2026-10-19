@@ -80,6 +80,19 @@ export interface SyllableExercise {
   wordWithoutAccent?: string; // e.g. "cafe"
 }
 
+export interface ActivityLogItem {
+  id: string;
+  missionId: string;
+  missionTitle: string;
+  skillCode?: string;
+  icon: string;
+  scoreEarned: number;
+  starsEarned: number;
+  completedAt: string;
+  formattedDate?: string;
+  questionsAnswered?: number;
+}
+
 export interface UserStats {
   score: number;
   starsEarned: number;
@@ -90,6 +103,7 @@ export interface UserStats {
   }>;
   badgesEarned: string[];
   recentBadges?: string[];
+  activityHistory?: ActivityLogItem[];
   lastPlayedDate?: string;
   studentName?: string;
   classroomId?: string;
