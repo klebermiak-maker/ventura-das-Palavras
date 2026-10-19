@@ -146,6 +146,17 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <span>Turmas 👥</span>
           </button>
+          <button
+            onClick={() => {
+              soundManager.playClick();
+              onNavigate('certificado');
+            }}
+            className={`whitespace-nowrap shrink-0 hover:text-slate-900 transition-colors py-1 cursor-pointer flex items-center gap-1 ${
+              currentView === 'certificado' ? 'text-amber-600 font-semibold border-b-2 border-amber-500' : ''
+            }`}
+          >
+            <span>Certificado 🏅</span>
+          </button>
         </nav>
 
         {/* Zone 3: 1 primary action + unobtrusive controls */}
@@ -156,11 +167,17 @@ export const Header: React.FC<HeaderProps> = ({
               soundManager.playClick();
               onOpenIdentityModal();
             }}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer border border-slate-200"
-            title="Clique para alterar seu nome e turma escolar"
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-lg transition-colors cursor-pointer border ${
+              !studentName
+                ? 'text-amber-900 bg-amber-100 hover:bg-amber-200 border-amber-300 shadow-2xs animate-pulse'
+                : 'text-indigo-900 bg-indigo-50 hover:bg-indigo-100 border-indigo-200'
+            }`}
+            title={studentName ? 'Clique para alterar seu nome e turma escolar' : 'Você precisa se identificar e escolher sua turma!'}
           >
-            <User className="w-3.5 h-3.5 text-indigo-600 shrink-0" />
-            <span className="truncate max-w-[100px]">{studentName || 'Identificar Aluno'}</span>
+            <User className={`w-3.5 h-3.5 shrink-0 ${!studentName ? 'text-amber-700' : 'text-indigo-600'}`} />
+            <span className="truncate max-w-[130px]">
+              {studentName ? studentName : '⚠️ Escolher Turma'}
+            </span>
           </button>
 
           {/* Subtle level, star & score counter */}

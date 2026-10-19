@@ -309,6 +309,22 @@ export const RelatorioTurmas: React.FC<Props> = ({
               type="button"
               onClick={() => {
                 soundManager.playClick();
+                setGradeFilter('4');
+                const target = classrooms.find(c => c.id === 'turma-4a');
+                if (target) setSelectedClassId(target.id);
+              }}
+              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                gradeFilter === '4'
+                  ? 'bg-white text-emerald-700 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              📗 4º Ano (A ao E)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                soundManager.playClick();
                 setGradeFilter('5');
                 const target = classrooms.find(c => c.id === 'turma-5a');
                 if (target) setSelectedClassId(target.id);
@@ -320,22 +336,6 @@ export const RelatorioTurmas: React.FC<Props> = ({
               }`}
             >
               📙 5º Ano (A ao E)
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                soundManager.playClick();
-                setGradeFilter('4');
-                const target = classrooms.find(c => c.id === 'turma-4a');
-                if (target) setSelectedClassId(target.id);
-              }}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                gradeFilter === '4'
-                  ? 'bg-white text-indigo-700 shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900'
-              }`}
-            >
-              📗 4º Ano
             </button>
             <button
               type="button"
@@ -356,7 +356,7 @@ export const RelatorioTurmas: React.FC<Props> = ({
           {/* Quick Letter Pills (A ao E) */}
           <div className="flex items-center gap-1.5 bg-indigo-50/60 px-3 py-1.5 rounded-xl border border-indigo-100">
             <span className="text-[11px] font-bold text-indigo-800 uppercase tracking-wide mr-1">
-              Letra:
+              Letra ({gradeFilter === '5' ? '5º Ano' : gradeFilter === '4' ? '4º Ano' : gradeFilter === '3' ? '3º Ano' : 'Turma'}):
             </span>
             {['A', 'B', 'C', 'D', 'E'].map(letter => {
               const activeGrade = gradeFilter === '5' ? '5' : gradeFilter === '4' ? '4' : '3';
@@ -372,7 +372,7 @@ export const RelatorioTurmas: React.FC<Props> = ({
                       ? 'bg-indigo-600 text-white shadow-xs ring-2 ring-indigo-400'
                       : 'bg-white text-slate-700 border border-indigo-200 hover:bg-indigo-100 hover:text-indigo-900'
                   }`}
-                  title={`Selecionar ${gradeFilter === '5' ? '5º Ano' : '3º Ano'} ${letter}`}
+                  title={`Selecionar ${gradeFilter === '5' ? '5º Ano' : gradeFilter === '4' ? '4º Ano' : '3º Ano'} ${letter}`}
                 >
                   {letter}
                 </button>
@@ -430,10 +430,10 @@ export const RelatorioTurmas: React.FC<Props> = ({
                   </optgroup>
                 )}
 
-                {/* 5º Ano (A ao E) */}
-                {(gradeFilter === 'all' || gradeFilter === '5') && turmas5.length > 0 && (
-                  <optgroup label="📙 5º Ano do Ensino Fundamental (Turmas A até E)">
-                    {turmas5.map(c => (
+                {/* 4º Ano (A ao E) */}
+                {(gradeFilter === 'all' || gradeFilter === '4') && turmas4.length > 0 && (
+                  <optgroup label="📗 4º Ano do Ensino Fundamental (Turmas A até E)">
+                    {turmas4.map(c => (
                       <option key={c.id} value={c.id}>
                         {c.name} {c.schoolName ? `— ${c.schoolName}` : ''}
                       </option>
@@ -441,10 +441,10 @@ export const RelatorioTurmas: React.FC<Props> = ({
                   </optgroup>
                 )}
 
-                {/* 4º Ano (A ao E) */}
-                {(gradeFilter === 'all' || gradeFilter === '4') && turmas4.length > 0 && (
-                  <optgroup label="📗 4º Ano do Ensino Fundamental (Turmas A até E)">
-                    {turmas4.map(c => (
+                {/* 5º Ano (A ao E) */}
+                {(gradeFilter === 'all' || gradeFilter === '5') && turmas5.length > 0 && (
+                  <optgroup label="📙 5º Ano do Ensino Fundamental (Turmas A até E)">
+                    {turmas5.map(c => (
                       <option key={c.id} value={c.id}>
                         {c.name} {c.schoolName ? `— ${c.schoolName}` : ''}
                       </option>

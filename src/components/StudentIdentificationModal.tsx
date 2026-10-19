@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, School, CheckCircle, Sparkles, X, Plus } from 'lucide-react';
+import {
+  User,
+  School,
+  CheckCircle,
+  Sparkles,
+  X,
+  Plus,
+  ArrowRight,
+  ShieldAlert,
+  GraduationCap,
+  Users,
+} from 'lucide-react';
 import { FirebaseClassroom, fetchClassrooms, createClassroom } from '../services/firebase';
 import { soundManager } from '../utils/audio';
 
@@ -10,6 +21,8 @@ interface Props {
   currentStudentName: string;
   currentClassroomId: string;
   onSaveIdentity: (name: string, classroomId: string, classroomName: string) => void;
+  pendingMissionName?: string | null;
+  onContinueAsGuest?: () => void;
 }
 
 export const StudentIdentificationModal: React.FC<Props> = ({
@@ -18,16 +31,21 @@ export const StudentIdentificationModal: React.FC<Props> = ({
   currentStudentName,
   currentClassroomId,
   onSaveIdentity,
+  pendingMissionName,
+  onContinueAsGuest,
 }) => {
   const [name, setName] = useState(currentStudentName);
-  const [classroomId, setClassroomId] = useState(currentClassroomId || 'turma-4a');
+  const [classroomId, setClassroomId] = useState(currentClassroomId || 'turma-3a');
   const [classrooms, setClassrooms] = useState<FirebaseClassroom[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCreatingClass, setIsCreatingClass] = useState(false);
   const [newClassName, setNewClassName] = useState('');
   const [newSchoolName, setNewSchoolName] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const [gradeFilter, setGradeFilter] = useState<'all' | '3' | '5' | '4'>('all');
+  const [gradeFilter, setGradeFilter] = useState<'3' | '5' | '4' | 'all'>('3');
+
+  const isFirstTime = !currentStudentName || currentStudentName.trim() === '';
 
   useEffect(() => {
     setName(currentStudentName);
@@ -38,6 +56,8 @@ export const StudentIdentificationModal: React.FC<Props> = ({
         setGradeFilter('3');
       } else if (currentClassroomId.includes('5') || currentClassroomId.startsWith('turma-5')) {
         setGradeFilter('5');
+      } else if (currentClassroomId.includes('4') || currentClassroomId.startsWith('turma-4')) {
+        setGradeFilter('4');
       }
     }
   }, [currentStudentName, currentClassroomId]);
@@ -45,6 +65,7 @@ export const StudentIdentificationModal: React.FC<Props> = ({
   useEffect(() => {
     if (isOpen) {
       loadClassrooms();
+      setErrorMessage('');
     }
   }, [isOpen]);
 
@@ -54,8 +75,8 @@ export const StudentIdentificationModal: React.FC<Props> = ({
       const list = await fetchClassrooms();
       setClassrooms(list);
       if (!classroomId && list.length > 0) {
-        // Prefer 3º Ano A or 5º Ano A
-        const defaultClass = list.find(c => c.id === 'turma-3a') || list[0];
+        // Default to 3º Ano A or 5º Ano A
+        const defaultClass = list.find(c => c.id === 'turma-3a') || list.find(c => c.id === 'turma-5a') || list[0];
         setClassroomId(defaultClass.id);
       }
     } catch (e) {
@@ -87,23 +108,35 @@ export const StudentIdentificationModal: React.FC<Props> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    const trimmedName = name.trim();
+    if (!trimmedName || trimmedName.length < 2) {
+      setErrorMessage('Por favor, digite seu nome com pelo menos 2 letras.');
+      return;
+    }
 
     soundManager.playCorrect();
     const selectedClass = classrooms.find(c => c.id === classroomId);
-    onSaveIdentity(name.trim(), classroomId, selectedClass ? selectedClass.name : '3º Ano');
-    onClose();
+    const chosenClassroomId = classroomId || 'turma-3a';
+    const chosenClassName = selectedClass ? selectedClass.name : '3º Ano A';
+
+    onSaveIdentity(trimmedName, chosenClassroomId, chosenClassName);
   };
 
   // Group classrooms
-  const turmas3 = classrooms.filter(c => c.id.startsWith('turma-3') || c.name.includes('3º') || c.name.toLowerCase().includes('terceiro'));
-  const turmas5 = classrooms.filter(c => c.id.startsWith('turma-5') || c.name.includes('5º') || c.name.toLowerCase().includes('quinto'));
-  const turmas4 = classrooms.filter(c => c.id.startsWith('turma-4') || c.name.includes('4º') || c.name.toLowerCase().includes('quarto'));
+  const turmas3 = classrooms.filter(
+    c => c.id.startsWith('turma-3') || c.name.includes('3º') || c.name.toLowerCase().includes('terceiro')
+  );
+  const turmas5 = classrooms.filter(
+    c => c.id.startsWith('turma-5') || c.name.includes('5º') || c.name.toLowerCase().includes('quinto')
+  );
+  const turmas4 = classrooms.filter(
+    c => c.id.startsWith('turma-4') || c.name.includes('4º') || c.name.toLowerCase().includes('quarto')
+  );
   const otherTurmas = classrooms.filter(
     c => !turmas3.includes(c) && !turmas5.includes(c) && !turmas4.includes(c)
   );
 
-  const selectedClass = classrooms.find(c => c.id === classroomId) || classrooms[0];
+  const selectedClass = classrooms.find(c => c.id === classroomId) || turmas3[0] || classrooms[0];
 
   // Helper to quickly select a letter (A, B, C, D, E) for current grade
   const handleSelectLetter = (letter: string) => {
@@ -127,7 +160,11 @@ export const StudentIdentificationModal: React.FC<Props> = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onClose}
+        onClick={() => {
+          if (!isFirstTime) {
+            onClose();
+          }
+        }}
         className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs cursor-pointer"
       />
 
@@ -140,51 +177,83 @@ export const StudentIdentificationModal: React.FC<Props> = ({
         className="relative z-10 bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-indigo-50/50">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-slate-100 bg-gradient-to-r from-indigo-50 via-purple-50 to-indigo-50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-xs">
-              <User className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-md">
+              <GraduationCap className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-slate-900 font-display">
-                Identificação do Estudante
+              <div className="flex items-center gap-1.5 text-[11px] font-mono font-bold tracking-wider text-indigo-700 uppercase">
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span>Identificação Obrigatória</span>
+              </div>
+              <h2 className="text-lg sm:text-xl font-extrabold text-slate-900 font-display">
+                {isFirstTime ? 'Quem é você na Aventura?' : 'Identificação do Estudante'}
               </h2>
-              <p className="text-xs text-slate-500">
-                Seus pontos e medalhas serão sincronizados com o Firebase
-              </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {!isFirstTime && (
+            <button
+              onClick={onClose}
+              className="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer"
+              title="Fechar"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
+        </div>
+
+        {/* Informative Banner */}
+        <div className="px-6 py-3 bg-amber-50/80 border-b border-amber-200/70 flex items-start gap-2.5 text-xs text-amber-900">
+          <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <p className="leading-relaxed">
+            {pendingMissionName ? (
+              <span>
+                Para acessar <strong>{pendingMissionName}</strong>, identifique-se e escolha sua turma para registrar seus pontos e medalhas.
+              </span>
+            ) : (
+              <span>
+                Para acumular pontos, disputar o <strong>Ranking da Turma</strong> e emitir seu <strong>Certificado de Conquista</strong>, digite seu nome e escolha sua turma.
+              </span>
+            )}
+          </p>
         </div>
 
         {/* Content Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-5">
           {/* Student Name */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-              Nome do Estudante (Aluno / Aluna):
+            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center justify-between">
+              <span>1. Nome do Aluno(a):</span>
+              <span className="text-[11px] font-normal text-slate-400 lowercase">ex: Lucas Silva, Ana Beatriz</span>
             </label>
-            <input
-              type="text"
-              required
-              value={name}
-              onChange={e => setName(e.target.value)}
-              placeholder="Ex: Maria Clara Santos"
-              className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 focus:outline-none text-sm font-medium text-slate-900 transition-colors"
-            />
+            <div className="relative">
+              <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5" />
+              <input
+                type="text"
+                required
+                autoFocus={isFirstTime}
+                value={name}
+                onChange={e => {
+                  setName(e.target.value);
+                  if (errorMessage) setErrorMessage('');
+                }}
+                placeholder="Digite seu primeiro nome e sobrenome"
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-300 focus:border-indigo-600 focus:ring-2 focus:ring-indigo-100 focus:outline-none text-sm font-semibold text-slate-900 transition-colors shadow-2xs"
+              />
+            </div>
+            {errorMessage && (
+              <p className="text-xs text-rose-600 font-semibold">{errorMessage}</p>
+            )}
           </div>
 
           {/* Classroom Selection */}
           {!isCreatingClass ? (
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                  Lista Suspensa de Turmas:
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>2. Escolha sua Turma Escolar:</span>
                 </label>
                 <button
                   type="button"
@@ -192,12 +261,12 @@ export const StudentIdentificationModal: React.FC<Props> = ({
                   className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center gap-1 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
-                  <span>Cadastrar Nova Turma</span>
+                  <span>Nova Turma</span>
                 </button>
               </div>
 
-              {/* Grade Filter Tabs (3º Ano ou 5º Ano) */}
-              <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+              {/* Grade Filter Tabs (3º Ano, 4º Ano ou 5º Ano) */}
+              <div className="grid grid-cols-4 gap-1.5 bg-slate-100 p-1 rounded-xl">
                 <button
                   type="button"
                   onClick={() => {
@@ -206,13 +275,29 @@ export const StudentIdentificationModal: React.FC<Props> = ({
                     const target = classrooms.find(c => c.id === 'turma-3a');
                     if (target) setClassroomId(target.id);
                   }}
-                  className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  className={`py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                     gradeFilter === '3'
-                      ? 'bg-white text-indigo-700 shadow-xs'
+                      ? 'bg-white text-indigo-700 shadow-xs ring-1 ring-slate-200'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  📘 3º Ano (A ao E)
+                  📘 3º Ano
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playClick();
+                    setGradeFilter('4');
+                    const target = classrooms.find(c => c.id === 'turma-4a');
+                    if (target) setClassroomId(target.id);
+                  }}
+                  className={`py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                    gradeFilter === '4'
+                      ? 'bg-white text-emerald-700 shadow-xs ring-1 ring-slate-200'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  📗 4º Ano
                 </button>
                 <button
                   type="button"
@@ -222,13 +307,13 @@ export const StudentIdentificationModal: React.FC<Props> = ({
                     const target = classrooms.find(c => c.id === 'turma-5a');
                     if (target) setClassroomId(target.id);
                   }}
-                  className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  className={`py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                     gradeFilter === '5'
-                      ? 'bg-white text-indigo-700 shadow-xs'
+                      ? 'bg-white text-indigo-700 shadow-xs ring-1 ring-slate-200'
                       : 'text-slate-600 hover:text-slate-900'
                   }`}
                 >
-                  📙 5º Ano (A ao E)
+                  📙 5º Ano
                 </button>
                 <button
                   type="button"
@@ -236,9 +321,9 @@ export const StudentIdentificationModal: React.FC<Props> = ({
                     soundManager.playClick();
                     setGradeFilter('all');
                   }}
-                  className={`py-1.5 px-3 text-xs font-bold rounded-lg transition-all cursor-pointer ${
+                  className={`py-1.5 text-xs font-bold rounded-lg transition-all cursor-pointer ${
                     gradeFilter === 'all'
-                      ? 'bg-white text-slate-900 shadow-xs'
+                      ? 'bg-white text-slate-900 shadow-xs ring-1 ring-slate-200'
                       : 'text-slate-500 hover:text-slate-800'
                   }`}
                 >
@@ -247,15 +332,18 @@ export const StudentIdentificationModal: React.FC<Props> = ({
               </div>
 
               {/* Quick letter buttons A ao E for rapid selection */}
-              <div className="flex items-center justify-between gap-1.5 bg-indigo-50/50 p-2 rounded-xl border border-indigo-100">
-                <span className="text-[11px] font-bold text-indigo-800 uppercase tracking-wide shrink-0">
-                  Letra ({gradeFilter === '5' ? '5º Ano' : '3º Ano'}):
+              <div className="flex items-center justify-between gap-1.5 bg-indigo-50/70 p-2.5 rounded-xl border border-indigo-100">
+                <span className="text-[11px] font-bold text-indigo-900 uppercase tracking-wide shrink-0">
+                  Letra ({gradeFilter === '5' ? '5º Ano' : gradeFilter === '4' ? '4º Ano' : gradeFilter === '3' ? '3º Ano' : 'Turma'}):
                 </span>
                 <div className="flex items-center gap-1.5">
                   {['A', 'B', 'C', 'D', 'E'].map(letter => {
                     const activeGrade = gradeFilter === '5' ? '5' : gradeFilter === '4' ? '4' : '3';
                     const targetId = `turma-${activeGrade}${letter.toLowerCase()}`;
-                    const isSelected = selectedClass && (selectedClass.id === targetId || selectedClass.name.endsWith(` ${letter}`));
+                    const isSelected =
+                      selectedClass &&
+                      (selectedClass.id === targetId ||
+                        (selectedClass.name.includes(`${activeGrade}º`) && selectedClass.name.endsWith(` ${letter}`)));
                     return (
                       <button
                         key={letter}
@@ -266,7 +354,7 @@ export const StudentIdentificationModal: React.FC<Props> = ({
                             ? 'bg-indigo-600 text-white shadow-xs scale-105 ring-2 ring-indigo-400'
                             : 'bg-white text-slate-700 border border-indigo-200 hover:bg-indigo-100 hover:text-indigo-900'
                         }`}
-                        title={`Selecionar ${gradeFilter === '5' ? '5º Ano' : '3º Ano'} ${letter}`}
+                        title={`Selecionar ${gradeFilter === '5' ? '5º Ano' : gradeFilter === '4' ? '4º Ano' : '3º Ano'} ${letter}`}
                       >
                         {letter}
                       </button>
@@ -296,10 +384,10 @@ export const StudentIdentificationModal: React.FC<Props> = ({
                     </optgroup>
                   )}
 
-                  {/* 5º Ano (A ao E) */}
-                  {(gradeFilter === 'all' || gradeFilter === '5') && turmas5.length > 0 && (
-                    <optgroup label="📙 5º Ano do Ensino Fundamental (Turmas A até E)">
-                      {turmas5.map(c => (
+                  {/* 4º Ano (A ao E) */}
+                  {(gradeFilter === 'all' || gradeFilter === '4') && turmas4.length > 0 && (
+                    <optgroup label="📗 4º Ano do Ensino Fundamental (Turmas A até E)">
+                      {turmas4.map(c => (
                         <option key={c.id} value={c.id}>
                           {c.name} {c.schoolName ? `— ${c.schoolName}` : ''}
                         </option>
@@ -307,10 +395,10 @@ export const StudentIdentificationModal: React.FC<Props> = ({
                     </optgroup>
                   )}
 
-                  {/* 4º Ano (A ao E) */}
-                  {(gradeFilter === 'all' || gradeFilter === '4') && turmas4.length > 0 && (
-                    <optgroup label="📗 4º Ano do Ensino Fundamental (Turmas A até E)">
-                      {turmas4.map(c => (
+                  {/* 5º Ano (A ao E) */}
+                  {(gradeFilter === 'all' || gradeFilter === '5') && turmas5.length > 0 && (
+                    <optgroup label="📙 5º Ano do Ensino Fundamental (Turmas A até E)">
+                      {turmas5.map(c => (
                         <option key={c.id} value={c.id}>
                           {c.name} {c.schoolName ? `— ${c.schoolName}` : ''}
                         </option>
@@ -334,7 +422,7 @@ export const StudentIdentificationModal: React.FC<Props> = ({
               {/* Selected Classroom Preview Card */}
               {selectedClass && (
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-bold">
                       <School className="w-4 h-4" />
                     </div>
@@ -346,7 +434,7 @@ export const StudentIdentificationModal: React.FC<Props> = ({
                     </div>
                   </div>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">
-                    Ativa
+                    ✓ Turma Selecionada
                   </span>
                 </div>
               )}
@@ -359,7 +447,7 @@ export const StudentIdentificationModal: React.FC<Props> = ({
                 <button
                   type="button"
                   onClick={() => setIsCreatingClass(false)}
-                  className="text-xs text-slate-500 hover:text-slate-800"
+                  className="text-xs text-slate-500 hover:text-slate-800 cursor-pointer"
                 >
                   Voltar à seleção
                 </button>
@@ -392,22 +480,40 @@ export const StudentIdentificationModal: React.FC<Props> = ({
             </div>
           )}
 
+          {/* Action Buttons */}
           <div className="pt-3 border-t border-slate-100 flex items-center justify-between gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
-            >
-              Cancelar
-            </button>
+            {isFirstTime ? (
+              <button
+                type="button"
+                onClick={() => {
+                  soundManager.playClick();
+                  if (onContinueAsGuest) {
+                    onContinueAsGuest();
+                  } else {
+                    onClose();
+                  }
+                }}
+                className="text-xs text-slate-500 hover:text-slate-700 font-medium underline underline-offset-2 cursor-pointer"
+              >
+                Explorar como Visitante
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+            )}
 
             <button
               type="submit"
               disabled={!name.trim()}
-              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-colors cursor-pointer shadow-xs flex items-center gap-1.5"
+              className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 disabled:opacity-50 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer shadow-md flex items-center gap-2"
             >
               <CheckCircle className="w-4 h-4" />
-              <span>Salvar e Conectar</span>
+              <span>{isFirstTime ? 'Começar Aventura! 🚀' : 'Salvar e Conectar'}</span>
             </button>
           </div>
         </form>

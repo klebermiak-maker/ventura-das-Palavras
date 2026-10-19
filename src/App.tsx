@@ -10,6 +10,7 @@ import { SprintGame } from './components/SprintGame';
 import { RelatorioEducador } from './components/RelatorioEducador';
 import { RelatorioTurmas } from './components/RelatorioTurmas';
 import { DicionarioVisual } from './components/DicionarioVisual';
+import { CertificadoConquista } from './components/CertificadoConquista';
 import { StudentIdentificationModal } from './components/StudentIdentificationModal';
 import { RegrasAcentuacaoModal } from './components/RegrasAcentuacaoModal';
 import { CelebrationOverlay, CelebrationData } from './components/CelebrationOverlay';
@@ -50,6 +51,7 @@ export default function App() {
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isRulesModalOpen, setIsRulesModalOpen] = useState<boolean>(false);
   const [isIdentityModalOpen, setIsIdentityModalOpen] = useState<boolean>(false);
+  const [pendingMission, setPendingMission] = useState<string | null>(null);
   const [celebrationData, setCelebrationData] = useState<CelebrationData | null>(null);
 
   const [stats, setStats] = useState<UserStats>(() => {
@@ -69,6 +71,13 @@ export default function App() {
     testFirestoreConnection().catch(err => {
       console.warn('Firestore initial connection check:', err);
     });
+  }, []);
+
+  // Prompt student identification on initial app boot if student has not identified themselves yet
+  useEffect(() => {
+    if (!stats.studentName || stats.studentName.trim() === '') {
+      setIsIdentityModalOpen(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -204,6 +213,24 @@ export default function App() {
     }
   };
 
+  const missionDisplayNames: Record<string, string> = {
+    explicitas: 'Detetive dos Fatos (Informações Explícitas)',
+    central: 'A Bússola do Tema (Ideia Central)',
+    implicitas: 'Mago das Entrelinhas (Inferências)',
+    acentuacao: 'Usina dos Acentos (Acentuação Gráfica)',
+    sprint: 'Sprint Relâmpago das Palavras',
+  };
+
+  const handleSelectMission = (view: string) => {
+    const isGameMission = ['explicitas', 'central', 'implicitas', 'acentuacao', 'sprint'].includes(view);
+    if (isGameMission && (!stats.studentName || stats.studentName.trim() === '')) {
+      setPendingMission(view);
+      setIsIdentityModalOpen(true);
+      return;
+    }
+    setCurrentView(view);
+  };
+
   const handleUpdateStudentName = (name: string) => {
     setStats(prev => {
       const updated = { ...prev, studentName: name };
@@ -221,6 +248,11 @@ export default function App() {
     };
     setStats(updated);
     syncToFirebaseIfIdentified(updated);
+    setIsIdentityModalOpen(false);
+    if (pendingMission) {
+      setCurrentView(pendingMission);
+      setPendingMission(null);
+    }
   };
 
   return (
@@ -228,7 +260,7 @@ export default function App() {
       {/* Top Bar Header */}
       <Header
         currentView={currentView}
-        onNavigate={setCurrentView}
+        onNavigate={handleSelectMission}
         starsCount={stats.starsEarned}
         score={stats.score}
         studentName={stats.studentName}
@@ -251,7 +283,7 @@ export default function App() {
               exit="exit"
             >
               <MissionHub
-                onSelectMission={setCurrentView}
+                onSelectMission={handleSelectMission}
                 starsCount={stats.starsEarned}
                 score={stats.score}
                 skillStats={stats.skillStats}
@@ -399,6 +431,22 @@ export default function App() {
               />
             </motion.div>
           )}
+
+          {currentView === 'certificado' && (
+            <motion.div
+              key="certificado"
+              variants={viewTransitionVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <CertificadoConquista
+                userStats={stats}
+                onNavigate={setCurrentView}
+                onOpenIdentityModal={() => setIsIdentityModalOpen(true)}
+              />
+            </motion.div>
+          )}
         </AnimatePresence>
       </main>
 
@@ -417,10 +465,21 @@ export default function App() {
         {isIdentityModalOpen && (
           <StudentIdentificationModal
             isOpen={isIdentityModalOpen}
-            onClose={() => setIsIdentityModalOpen(false)}
+            onClose={() => {
+              setIsIdentityModalOpen(false);
+              setPendingMission(null);
+            }}
             currentStudentName={stats.studentName || ''}
-            currentClassroomId={stats.classroomId || 'turma-4a'}
+            currentClassroomId={stats.classroomId || 'turma-3a'}
             onSaveIdentity={handleSaveIdentity}
+            pendingMissionName={pendingMission ? missionDisplayNames[pendingMission] || pendingMission : null}
+            onContinueAsGuest={() => {
+              setIsIdentityModalOpen(false);
+              if (pendingMission) {
+                setCurrentView(pendingMission);
+                setPendingMission(null);
+              }
+            }}
           />
         )}
       </AnimatePresence>

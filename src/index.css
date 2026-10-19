@@ -31,16 +31,25 @@
 
 /* Print styling for certificates */
 @media print {
+  @page {
+    size: A4 landscape;
+    margin: 8mm;
+  }
   header, nav, button:not(.print-include), .no-print {
     display: none !important;
   }
   body {
     background: white !important;
     color: black !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   .print-only-container {
     display: block !important;
-    padding: 0 !important;
-    margin: 0 !important;
+    padding: 24px !important;
+    margin: 0 auto !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
   }
 }

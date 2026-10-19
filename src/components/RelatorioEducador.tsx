@@ -80,11 +80,22 @@ export const RelatorioEducador: React.FC<Props> = ({
           </button>
 
           <button
+            onClick={() => {
+              soundManager.playClick();
+              onNavigate('certificado');
+            }}
+            className="px-3.5 py-2 border border-amber-300 text-amber-900 bg-amber-100 hover:bg-amber-200 font-bold text-xs rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+          >
+            <Award className="w-4 h-4 text-amber-600" />
+            <span>Emitir Certificado 🏅</span>
+          </button>
+
+          <button
             onClick={handlePrint}
             className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg transition-colors cursor-pointer flex items-center gap-2 shadow-xs"
           >
             <Printer className="w-4 h-4" />
-            <span>Imprimir Diploma & Relatório</span>
+            <span>Imprimir Relatório</span>
           </button>
 
           {!showConfirmReset ? (
