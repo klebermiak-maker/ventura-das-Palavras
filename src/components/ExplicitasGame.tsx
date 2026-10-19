@@ -5,6 +5,7 @@ import { EXPLICIT_QUESTIONS, READING_TEXTS } from '../data/bnccContent';
 import { soundManager } from '../utils/audio';
 import { speechService } from '../utils/speech';
 import confetti from 'canvas-confetti';
+import { VidasAprendizado } from './VidasAprendizado';
 
 interface Props {
   onEarnScore: (points: number, stars: number, skill: 'EF15LP03', questionId: string) => void;
@@ -19,18 +20,26 @@ export const ExplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, compl
   const [showClueHighlight, setShowClueHighlight] = useState(false);
   const [isNarrating, setIsNarrating] = useState(false);
   const [fontSizeClass, setFontSizeClass] = useState<'text-base' | 'text-lg'>('text-base');
+  const [lives, setLives] = useState(3);
 
   const currentQuestion = EXPLICIT_QUESTIONS[currentIndex];
   const currentText = READING_TEXTS.find(t => t.id === currentQuestion.textId) || READING_TEXTS[0];
 
+  const handleRecoverLives = () => {
+    setLives(3);
+    setHasSubmitted(false);
+    setSelectedOptionId(null);
+    setShowClueHighlight(true); // Generously activate clue highlight to help student
+  };
+
   const handleSelectOption = (optionId: string) => {
-    if (hasSubmitted) return;
+    if (hasSubmitted || lives <= 0) return;
     soundManager.playClick();
     setSelectedOptionId(optionId);
   };
 
   const handleConfirmAnswer = () => {
-    if (!selectedOptionId || hasSubmitted) return;
+    if (!selectedOptionId || hasSubmitted || lives <= 0) return;
     setHasSubmitted(true);
 
     const chosenOption = currentQuestion.options.find(o => o.id === selectedOptionId);
@@ -44,6 +53,7 @@ export const ExplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, compl
       });
     } else {
       soundManager.playWrong();
+      setLives(prev => Math.max(0, prev - 1));
       onEarnScore(20, 0, 'EF15LP03', currentQuestion.id);
     }
   };
@@ -95,8 +105,17 @@ export const ExplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, compl
           </p>
         </div>
 
-        {/* Progress counter & Font size switch */}
-        <div className="flex items-center gap-3">
+        {/* Progress counter, Font size switch & Vidas de Aprendizado */}
+        <div className="flex flex-wrap items-center gap-3">
+          <VidasAprendizado
+            lives={lives}
+            maxLives={3}
+            onRecoverLives={handleRecoverLives}
+            onReturnToHub={() => onNavigate('hub')}
+            missionName="Detetive dos Fatos"
+            pedagogicalTip="As informações explícitas estão gravadas no texto exatamente como foram perguntadas. Use o botão de destaque da lupa para encontrar a frase exata!"
+          />
+
           <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs">
             <button
               onClick={() => setFontSizeClass('text-base')}

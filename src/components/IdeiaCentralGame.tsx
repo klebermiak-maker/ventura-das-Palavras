@@ -5,6 +5,7 @@ import { CENTRAL_IDEA_QUESTIONS, READING_TEXTS } from '../data/bnccContent';
 import { soundManager } from '../utils/audio';
 import { speechService } from '../utils/speech';
 import confetti from 'canvas-confetti';
+import { VidasAprendizado } from './VidasAprendizado';
 
 interface Props {
   onEarnScore: (points: number, stars: number, skill: 'EF35LP03', questionId: string) => void;
@@ -17,18 +18,25 @@ export const IdeiaCentralGame: React.FC<Props> = ({ onEarnScore, onNavigate, com
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isNarrating, setIsNarrating] = useState(false);
+  const [lives, setLives] = useState(3);
 
   const currentQuestion = CENTRAL_IDEA_QUESTIONS[currentIndex];
   const currentText = READING_TEXTS.find(t => t.id === currentQuestion.textId) || READING_TEXTS[0];
 
+  const handleRecoverLives = () => {
+    setLives(3);
+    setHasSubmitted(false);
+    setSelectedOptionId(null);
+  };
+
   const handleSelectOption = (optionId: string) => {
-    if (hasSubmitted) return;
+    if (hasSubmitted || lives <= 0) return;
     soundManager.playClick();
     setSelectedOptionId(optionId);
   };
 
   const handleConfirmAnswer = () => {
-    if (!selectedOptionId || hasSubmitted) return;
+    if (!selectedOptionId || hasSubmitted || lives <= 0) return;
     setHasSubmitted(true);
 
     const chosenOption = currentQuestion.options.find(o => o.id === selectedOptionId);
@@ -42,6 +50,7 @@ export const IdeiaCentralGame: React.FC<Props> = ({ onEarnScore, onNavigate, com
       });
     } else {
       soundManager.playWrong();
+      setLives(prev => Math.max(0, prev - 1));
       onEarnScore(20, 0, 'EF35LP03', currentQuestion.id);
     }
   };
@@ -92,8 +101,19 @@ export const IdeiaCentralGame: React.FC<Props> = ({ onEarnScore, onNavigate, com
           </p>
         </div>
 
-        <div className="text-xs font-mono font-bold text-slate-600 bg-sky-50 border border-sky-200 px-3 py-1.5 rounded-lg shrink-0">
-          Desafio {currentIndex + 1} de {CENTRAL_IDEA_QUESTIONS.length}
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <VidasAprendizado
+            lives={lives}
+            maxLives={3}
+            onRecoverLives={handleRecoverLives}
+            onReturnToHub={() => onNavigate('hub')}
+            missionName="A Bússola do Tema"
+            pedagogicalTip="A ideia central abrange o texto como um todo! Pergunte a si mesmo: qual é a mensagem principal que o autor quer comunicar do início ao fim?"
+          />
+
+          <div className="text-xs font-mono font-bold text-slate-600 bg-sky-50 border border-sky-200 px-3 py-1.5 rounded-lg shrink-0">
+            Desafio {currentIndex + 1} de {CENTRAL_IDEA_QUESTIONS.length}
+          </div>
         </div>
       </div>
 

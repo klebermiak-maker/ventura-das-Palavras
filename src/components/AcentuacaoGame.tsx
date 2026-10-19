@@ -6,6 +6,7 @@ import { SyllableClassification, SyllableExercise } from '../types/game';
 import { soundManager } from '../utils/audio';
 import { speechService } from '../utils/speech';
 import confetti from 'canvas-confetti';
+import { VidasAprendizado } from './VidasAprendizado';
 
 interface Props {
   onEarnScore: (points: number, stars: number, skill: 'EF05LP03', questionId: string) => void;
@@ -20,8 +21,17 @@ export const AcentuacaoGame: React.FC<Props> = ({ onEarnScore, onNavigate, onOpe
   const [selectedClassification, setSelectedClassification] = useState<SyllableClassification | null>(null);
   const [selectedNeedsAccent, setSelectedNeedsAccent] = useState<boolean | null>(null);
   const [hasCheckedAnswer, setHasCheckedAnswer] = useState(false);
+  const [lives, setLives] = useState(3);
 
   const currentExercise = SYLLABLE_EXERCISES[currentIndex];
+
+  const handleRecoverLives = () => {
+    setLives(3);
+    setHasCheckedAnswer(false);
+    setSelectedSyllableIdx(null);
+    setSelectedClassification(null);
+    setSelectedNeedsAccent(null);
+  };
 
   const handlePronounce = (word: string) => {
     soundManager.playClick();
@@ -29,19 +39,19 @@ export const AcentuacaoGame: React.FC<Props> = ({ onEarnScore, onNavigate, onOpe
   };
 
   const handleSelectSyllable = (idx: number) => {
-    if (hasCheckedAnswer) return;
+    if (hasCheckedAnswer || lives <= 0) return;
     soundManager.playClick();
     setSelectedSyllableIdx(idx);
   };
 
   const handleSelectClass = (c: SyllableClassification) => {
-    if (hasCheckedAnswer) return;
+    if (hasCheckedAnswer || lives <= 0) return;
     soundManager.playClick();
     setSelectedClassification(c);
   };
 
   const handleSelectAccent = (needs: boolean) => {
-    if (hasCheckedAnswer) return;
+    if (hasCheckedAnswer || lives <= 0) return;
     soundManager.playClick();
     setSelectedNeedsAccent(needs);
   };
@@ -49,7 +59,7 @@ export const AcentuacaoGame: React.FC<Props> = ({ onEarnScore, onNavigate, onOpe
   const isCompleteForm = selectedSyllableIdx !== null && selectedClassification !== null && selectedNeedsAccent !== null;
 
   const handleCheckAnswer = () => {
-    if (!isCompleteForm || hasCheckedAnswer) return;
+    if (!isCompleteForm || hasCheckedAnswer || lives <= 0) return;
     setHasCheckedAnswer(true);
 
     const isSyllableRight = selectedSyllableIdx === currentExercise.tonicIndex;
@@ -68,6 +78,7 @@ export const AcentuacaoGame: React.FC<Props> = ({ onEarnScore, onNavigate, onOpe
       });
     } else {
       soundManager.playWrong();
+      setLives(prev => Math.max(0, prev - 1));
       onEarnScore(30, 0, 'EF05LP03', currentExercise.id);
     }
   };
@@ -110,7 +121,16 @@ export const AcentuacaoGame: React.FC<Props> = ({ onEarnScore, onNavigate, onOpe
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <VidasAprendizado
+            lives={lives}
+            maxLives={3}
+            onRecoverLives={handleRecoverLives}
+            onReturnToHub={() => onNavigate('hub')}
+            missionName="Usina dos Acentos"
+            pedagogicalTip="Chame a palavra alto e observe a sílaba que você segura por mais tempo: essa é a sílaba tônica! Todas as proparoxítonas recebem acento gráfico obrigatoriamente."
+          />
+
           <button
             onClick={() => {
               soundManager.playClick();

@@ -5,6 +5,7 @@ import { IMPLICIT_QUESTIONS, READING_TEXTS } from '../data/bnccContent';
 import { soundManager } from '../utils/audio';
 import { speechService } from '../utils/speech';
 import confetti from 'canvas-confetti';
+import { VidasAprendizado } from './VidasAprendizado';
 
 interface Props {
   onEarnScore: (points: number, stars: number, skill: 'EF35LP04', questionId: string) => void;
@@ -17,18 +18,25 @@ export const ImplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, compl
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isNarrating, setIsNarrating] = useState(false);
+  const [lives, setLives] = useState(3);
 
   const currentQuestion = IMPLICIT_QUESTIONS[currentIndex];
   const currentText = READING_TEXTS.find(t => t.id === currentQuestion.textId) || READING_TEXTS[0];
 
+  const handleRecoverLives = () => {
+    setLives(3);
+    setHasSubmitted(false);
+    setSelectedOptionId(null);
+  };
+
   const handleSelectOption = (optionId: string) => {
-    if (hasSubmitted) return;
+    if (hasSubmitted || lives <= 0) return;
     soundManager.playClick();
     setSelectedOptionId(optionId);
   };
 
   const handleConfirmAnswer = () => {
-    if (!selectedOptionId || hasSubmitted) return;
+    if (!selectedOptionId || hasSubmitted || lives <= 0) return;
     setHasSubmitted(true);
 
     const chosenOption = currentQuestion.options.find(o => o.id === selectedOptionId);
@@ -42,6 +50,7 @@ export const ImplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, compl
       });
     } else {
       soundManager.playWrong();
+      setLives(prev => Math.max(0, prev - 1));
       onEarnScore(20, 0, 'EF35LP04', currentQuestion.id);
     }
   };
@@ -92,8 +101,19 @@ export const ImplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, compl
           </p>
         </div>
 
-        <div className="text-xs font-mono font-bold text-slate-600 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg shrink-0">
-          Enigma {currentIndex + 1} de {IMPLICIT_QUESTIONS.length}
+        <div className="flex flex-wrap items-center gap-3 shrink-0">
+          <VidasAprendizado
+            lives={lives}
+            maxLives={3}
+            onRecoverLives={handleRecoverLives}
+            onReturnToHub={() => onNavigate('hub')}
+            missionName="Mago das Entrelinhas"
+            pedagogicalTip="Nas questões implícitas, combine as palavras do texto com a lógica do contexto. Se o personagem está com capa molhada e guarda-chuva, podemos inferir que choveu lá fora!"
+          />
+
+          <div className="text-xs font-mono font-bold text-slate-600 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg shrink-0">
+            Enigma {currentIndex + 1} de {IMPLICIT_QUESTIONS.length}
+          </div>
         </div>
       </div>
 
