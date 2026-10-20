@@ -5,6 +5,7 @@ import { BNCCSkill } from '../types/game';
 import { BNCC_SKILLS_INFO } from '../data/bnccContent';
 import { soundManager } from '../utils/audio';
 import { getPlayerLevelInfo } from '../utils/levels';
+import { MapaDeHabilidades } from './MapaDeHabilidades';
 
 interface Props {
   skillStats: Record<BNCCSkill, { attempted: number; correct: number }>;
@@ -177,10 +178,17 @@ export const RelatorioEducador: React.FC<Props> = ({
         </div>
       </div>
 
+      {/* Mapa de Habilidades & Radar de Aprendizagem */}
+      <MapaDeHabilidades
+        skillStats={skillStats}
+        studentName={studentName}
+        onSelectMission={onNavigate}
+      />
+
       {/* Skill Diagnostic Cards */}
       <div className="space-y-4">
         <h2 className="text-xl font-bold text-slate-900 font-display">
-          Desempenho por Habilidade da BNCC
+          Detalhamento por Habilidade da BNCC
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

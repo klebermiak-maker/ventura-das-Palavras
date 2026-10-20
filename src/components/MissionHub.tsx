@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence, type Variants } from 'framer-motion';
-import { Search, Compass, Eye, Sparkles, Star, Award, ArrowRight, BookOpen, CheckCircle, BarChart3, HelpCircle, Users, User, UserCheck, GraduationCap, Trophy } from 'lucide-react';
+import { Search, Compass, Eye, Sparkles, Star, Award, ArrowRight, BookOpen, CheckCircle, BarChart3, HelpCircle, Users, User, UserCheck, GraduationCap, Trophy, Lightbulb, Target } from 'lucide-react';
 import { BNCC_SKILLS_INFO } from '../data/bnccContent';
 import { soundManager } from '../utils/audio';
 import { DicaDeOuro } from './DicaDeOuro';
@@ -11,6 +11,8 @@ import { PainelMedalhas } from './PainelMedalhas';
 import { HistoricoAtividades } from './HistoricoAtividades';
 import { RankingDaTurma } from './RankingDaTurma';
 import { RankingGlobal } from './RankingGlobal';
+import { DicasDeLeitura } from './DicasDeLeitura';
+import { MapaDeHabilidades } from './MapaDeHabilidades';
 import { ActivityLogItem } from '../types/game';
 
 interface Props {
@@ -81,6 +83,7 @@ export const MissionHub: React.FC<Props> = ({
   onAddSampleActivity,
 }) => {
   const [rankingTab, setRankingTab] = useState<'global' | 'turma'>('global');
+  const [chartViewMode, setChartViewMode] = useState<'radar' | 'barras'>('radar');
 
   const missions = [
     {
@@ -317,6 +320,14 @@ export const MissionHub: React.FC<Props> = ({
       {/* Dica de Ouro Card */}
       <DicaDeOuro onBonusPoints={onBonusPoints} />
 
+      {/* Dicas de Leitura: Estratégias de Interpretação Textual (EF35LP03 e EF35LP04) */}
+      <div id="dicas-leitura-section">
+        <DicasDeLeitura
+          onSelectMission={onSelectMission}
+          onBonusPoints={onBonusPoints}
+        />
+      </div>
+
       {/* 4 Missions Grid */}
       <section className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
@@ -343,6 +354,36 @@ export const MissionHub: React.FC<Props> = ({
                 <span>Tutorial da Mentora</span>
               </button>
             )}
+
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                const el = document.getElementById('dicas-leitura-section');
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="text-xs text-sky-800 hover:text-sky-950 font-bold bg-sky-50 hover:bg-sky-100 border border-sky-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+              title="Ir para as Dicas Estratégicas de Interpretação Textual (EF35LP03 e EF35LP04)"
+            >
+              <Lightbulb className="w-3.5 h-3.5 text-sky-600" />
+              <span>Dicas de Leitura 💡</span>
+            </button>
+
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                const el = document.getElementById('mapa-habilidades-section');
+                if (el) {
+                  el.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              className="text-xs text-emerald-800 hover:text-emerald-950 font-bold bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+              title="Ver o Mapa de Radar das 4 habilidades BNCC com pontos fortes e reforço"
+            >
+              <Target className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Mapa de Habilidades 🎯</span>
+            </button>
 
             <button
               onClick={() => {
@@ -671,11 +712,88 @@ export const MissionHub: React.FC<Props> = ({
         </AnimatePresence>
       </div>
 
-      {/* BNCC Skills Performance Bar Chart Summary */}
-      <ResumoDesempenhoGrafico
-        skillStats={skillStats}
-        onNavigateToReport={() => onSelectMission('relatorio')}
-      />
+      {/* Diagnóstico de Habilidades BNCC: Mapa de Radar & Gráfico de Barras */}
+      <div id="mapa-habilidades-section" className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
+          <div className="flex items-center gap-2.5 px-1">
+            <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm">
+              🎯
+            </div>
+            <div>
+              <span className="font-extrabold text-sm text-slate-900 font-display block">
+                Mapa Diagnóstico de Habilidades BNCC
+              </span>
+              <span className="text-[11px] text-slate-500 block">
+                Gráfico de radar multidimensional com pontos fortes e áreas que precisam de reforço
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                setChartViewMode('radar');
+              }}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                chartViewMode === 'radar'
+                  ? 'bg-emerald-600 text-white shadow-xs font-extrabold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+              }`}
+            >
+              <span>🕸️</span>
+              <span>Mapa Radar BNCC</span>
+            </button>
+
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                setChartViewMode('barras');
+              }}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                chartViewMode === 'barras'
+                  ? 'bg-indigo-600 text-white shadow-xs font-extrabold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+              }`}
+            >
+              <span>📊</span>
+              <span>Gráfico de Barras</span>
+            </button>
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait">
+          {chartViewMode === 'radar' ? (
+            <motion.div
+              key="view-radar"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <MapaDeHabilidades
+                skillStats={skillStats}
+                studentName={studentName}
+                onSelectMission={onSelectMission}
+                onNavigateToReport={() => onSelectMission('relatorio')}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="view-barras"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ResumoDesempenhoGrafico
+                skillStats={skillStats}
+                onNavigateToReport={() => onSelectMission('relatorio')}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* Badges / Conquistas Section with Glowing & Pulsing Framer Motion animations */}
       <PainelMedalhas

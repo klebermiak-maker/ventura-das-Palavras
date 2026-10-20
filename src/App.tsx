@@ -15,6 +15,7 @@ import { EspacoDoProfessor } from './components/EspacoDoProfessor';
 import { StudentIdentificationModal } from './components/StudentIdentificationModal';
 import { RegrasAcentuacaoModal } from './components/RegrasAcentuacaoModal';
 import { MentorTutorialModal } from './components/MentorTutorialModal';
+import { DicasDeLeitura } from './components/DicasDeLeitura';
 import { CelebrationOverlay, CelebrationData } from './components/CelebrationOverlay';
 import { BNCCSkill, UserStats, ActivityLogItem } from './types/game';
 import { soundManager } from './utils/audio';
@@ -58,6 +59,7 @@ export default function App() {
   const [pendingMission, setPendingMission] = useState<string | null>(null);
   const [celebrationData, setCelebrationData] = useState<CelebrationData | null>(null);
   const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(false);
+  const [isReadingTipsModalOpen, setIsReadingTipsModalOpen] = useState<boolean>(false);
 
   const [stats, setStats] = useState<UserStats>(() => {
     try {
@@ -634,13 +636,57 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      {/* Clean Footnote */}
+      {/* Interactive Reading Strategy Modal Accessible from Footer */}
+      <AnimatePresence>
+        {isReadingTipsModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/70 backdrop-blur-xs">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl bg-white shadow-2xl p-1"
+            >
+              <button
+                onClick={() => setIsReadingTipsModalOpen(false)}
+                className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-sm cursor-pointer transition-colors shadow-2xs"
+                title="Fechar dicas de leitura"
+              >
+                ✕
+              </button>
+              <DicasDeLeitura
+                onSelectMission={(m) => {
+                  setIsReadingTipsModalOpen(false);
+                  handleSelectMission(m);
+                }}
+                onBonusPoints={handleBonusPoints}
+              />
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Clean Footnote with Interactive Reading Tips Access */}
       <footer className="bg-white border-t border-slate-200 py-6 text-center text-xs text-slate-500 no-print">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-slate-700">Aventura das Palavras</span>
             <span aria-hidden="true">·</span>
             <span>4º Ano do Ensino Fundamental</span>
+          </div>
+
+          {/* Direct trigger for Reading Tips from Footer */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                setIsReadingTipsModalOpen(true);
+              }}
+              className="px-3 py-1.5 rounded-xl bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-300 font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-2xs"
+              title="Abrir painel de Dicas de Leitura e Interpretação (EF35LP03 e EF35LP04)"
+            >
+              <span>💡</span>
+              <span>Dicas de Leitura (EF35LP03 / EF35LP04)</span>
+            </button>
           </div>
 
           <div className="flex items-center gap-3 text-slate-400">
