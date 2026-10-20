@@ -6,6 +6,7 @@ import {
   getDocs,
   getDoc,
   setDoc,
+  deleteDoc,
   query,
   orderBy,
   getDocFromServer,
@@ -655,6 +656,73 @@ export async function syncStudentPerformanceToFirebase(
     return data;
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
+  }
+}
+
+/**
+ * Permite ao professor transferir um estudante para outra turma caso tenha selecionado a turma errada.
+ * Cria o registro na nova turma e remove da turma antiga no Firestore.
+ */
+export async function transferStudentClassroom(
+  student: FirebaseStudentPerformance,
+  oldClassroomId: string,
+  newClassroomId: string
+): Promise<FirebaseStudentPerformance> {
+  const cleanOldClassroomId = oldClassroomId.replace(/[^a-zA-Z0-9_\-]/g, '_') || 'turma-4a';
+  const cleanNewClassroomId = newClassroomId.replace(/[^a-zA-Z0-9_\-]/g, '_') || 'turma-4a';
+  const cleanStudentId = student.studentId.replace(/[^a-zA-Z0-9_\-]/g, '_') || 'aluno_' + Math.random().toString(36).substring(2, 8);
+
+  const updatedData: FirebaseStudentPerformance = {
+    ...student,
+    studentId: cleanStudentId,
+    classroomId: cleanNewClassroomId,
+    updatedAt: new Date().toISOString(),
+  };
+
+  try {
+    // 1. Grava o documento do aluno na nova subcoleção da turma de destino
+    await setDoc(doc(db, 'classrooms', cleanNewClassroomId, 'students', cleanStudentId), updatedData);
+
+    // 2. Remove da turma antiga se a turma de destino for diferente
+    if (cleanOldClassroomId !== cleanNewClassroomId) {
+      try {
+        await deleteDoc(doc(db, 'classrooms', cleanOldClassroomId, 'students', cleanStudentId));
+      } catch (delErr) {
+        console.warn('Registro na turma antiga não pôde ser excluído ou já não existia:', delErr);
+      }
+    }
+
+    // 3. Atualiza cache local em memória (para ambientes de demonstração/offline)
+    if (SAMPLE_STUDENTS_PER_CLASS[cleanOldClassroomId]) {
+      SAMPLE_STUDENTS_PER_CLASS[cleanOldClassroomId] = SAMPLE_STUDENTS_PER_CLASS[cleanOldClassroomId].filter(
+        s => s.studentId !== cleanStudentId
+      );
+    }
+    if (!SAMPLE_STUDENTS_PER_CLASS[cleanNewClassroomId]) {
+      SAMPLE_STUDENTS_PER_CLASS[cleanNewClassroomId] = [];
+    }
+    SAMPLE_STUDENTS_PER_CLASS[cleanNewClassroomId] = [
+      ...SAMPLE_STUDENTS_PER_CLASS[cleanNewClassroomId].filter(s => s.studentId !== cleanStudentId),
+      updatedData,
+    ];
+
+    return updatedData;
+  } catch (error) {
+    console.error('Erro ao transferir aluno entre turmas no Firestore:', error);
+    // Em caso de erro de rede, garante atualização no cache em memória
+    if (SAMPLE_STUDENTS_PER_CLASS[cleanOldClassroomId]) {
+      SAMPLE_STUDENTS_PER_CLASS[cleanOldClassroomId] = SAMPLE_STUDENTS_PER_CLASS[cleanOldClassroomId].filter(
+        s => s.studentId !== cleanStudentId
+      );
+    }
+    if (!SAMPLE_STUDENTS_PER_CLASS[cleanNewClassroomId]) {
+      SAMPLE_STUDENTS_PER_CLASS[cleanNewClassroomId] = [];
+    }
+    SAMPLE_STUDENTS_PER_CLASS[cleanNewClassroomId] = [
+      ...SAMPLE_STUDENTS_PER_CLASS[cleanNewClassroomId].filter(s => s.studentId !== cleanStudentId),
+      updatedData,
+    ];
+    return updatedData;
   }
 }
 

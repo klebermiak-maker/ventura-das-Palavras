@@ -22,10 +22,11 @@ import { RelatorioTurmas } from './RelatorioTurmas';
 import { RelatorioEducador } from './RelatorioEducador';
 import { CertificadoConquista } from './CertificadoConquista';
 import { RankingGlobal } from './RankingGlobal';
+import { GestaoEstudantesTurmas } from './GestaoEstudantesTurmas';
 import { OFFICIAL_SCHOOL_NAME } from '../services/firebase';
 import { soundManager } from '../utils/audio';
 
-export type ProfessorTab = 'turmas' | 'certificado' | 'relatorio' | 'ranking';
+export type ProfessorTab = 'turmas' | 'gestao_alunos' | 'certificado' | 'relatorio' | 'ranking';
 
 interface Props {
   userStats: UserStats;
@@ -35,6 +36,7 @@ interface Props {
   onOpenIdentityModal: () => void;
   onUpdateStudentName: (name: string) => void;
   onResetProgress: () => void;
+  onStudentTransferred?: (studentName: string, newClassroomId: string, newClassroomName: string) => void;
 }
 
 export const EspacoDoProfessor: React.FC<Props> = ({
@@ -45,6 +47,7 @@ export const EspacoDoProfessor: React.FC<Props> = ({
   onOpenIdentityModal,
   onUpdateStudentName,
   onResetProgress,
+  onStudentTransferred,
 }) => {
   const [activeTab, setActiveTab] = useState<ProfessorTab>(initialTab);
 
@@ -134,19 +137,22 @@ export const EspacoDoProfessor: React.FC<Props> = ({
               }`}
             >
               <Users className="w-4 h-4 text-indigo-600" />
-              <span>1. Relatórios das Turmas & Estatísticas</span>
+              <span>1. Relatórios das Turmas & BNCC</span>
             </button>
 
             <button
-              onClick={() => handleTabChange('certificado')}
+              onClick={() => handleTabChange('gestao_alunos')}
               className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 ${
-                activeTab === 'certificado'
-                  ? 'bg-white text-amber-950 shadow-md ring-2 ring-amber-400/50'
-                  : 'bg-white/10 hover:bg-white/20 text-indigo-100 hover:text-white'
+                activeTab === 'gestao_alunos'
+                  ? 'bg-white text-slate-950 shadow-md ring-2 ring-amber-400'
+                  : 'bg-amber-400/20 hover:bg-amber-400/30 text-amber-200 hover:text-white border border-amber-400/30'
               }`}
             >
-              <Award className="w-4 h-4 text-amber-500" />
-              <span>2. Emissão de Certificados de Conquista</span>
+              <RefreshCw className="w-4 h-4 text-amber-400" />
+              <span>2. Gestão de Alunos & Alterar Turma 🔄</span>
+              <span className="text-[10px] bg-amber-400 text-slate-950 font-bold px-1.5 py-0.2 rounded-full font-mono">
+                Novo
+              </span>
             </button>
 
             <button
@@ -162,6 +168,18 @@ export const EspacoDoProfessor: React.FC<Props> = ({
             </button>
 
             <button
+              onClick={() => handleTabChange('certificado')}
+              className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                activeTab === 'certificado'
+                  ? 'bg-white text-amber-950 shadow-md ring-2 ring-amber-400/50'
+                  : 'bg-white/10 hover:bg-white/20 text-indigo-100 hover:text-white'
+              }`}
+            >
+              <Award className="w-4 h-4 text-amber-500" />
+              <span>4. Emissão de Certificados de Conquista</span>
+            </button>
+
+            <button
               onClick={() => handleTabChange('ranking')}
               className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 ${
                 activeTab === 'ranking'
@@ -170,7 +188,7 @@ export const EspacoDoProfessor: React.FC<Props> = ({
               }`}
             >
               <Trophy className="w-4 h-4 text-amber-400" />
-              <span>4. Ranking Global (Top 10 Geral)</span>
+              <span>5. Ranking Global (Top 10 Geral)</span>
             </button>
           </div>
         </div>
@@ -197,12 +215,20 @@ export const EspacoDoProfessor: React.FC<Props> = ({
                       Painel Geral de Turmas & Rendimento Coletivo
                     </h2>
                     <p className="text-xs text-indigo-700">
-                      Monitore o avanço das turmas nos descritores da BNCC, compare as pontuações e gere relatórios impressos.
+                      Monitore o avanço das turmas nos descritores da BNCC, compare as pontuações e corrija a turma de alunos se necessário.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    onClick={() => handleTabChange('gestao_alunos')}
+                    className="px-3.5 py-2 text-xs font-bold rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 transition-colors cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                  >
+                    <RefreshCw className="w-3.5 h-3.5 text-slate-900" />
+                    <span>Alterar Turma de Aluno 🔄</span>
+                  </button>
+
                   <button
                     onClick={() => handleTabChange('certificado')}
                     className="px-3.5 py-2 text-xs font-bold rounded-lg bg-white border border-indigo-200 text-indigo-900 hover:bg-indigo-100 transition-colors cursor-pointer flex items-center gap-1.5"
@@ -218,6 +244,23 @@ export const EspacoDoProfessor: React.FC<Props> = ({
                 currentClassroomId={currentClassroomId}
                 onNavigate={onNavigate}
                 onOpenIdentityModal={onOpenIdentityModal}
+                onStudentTransferred={onStudentTransferred}
+              />
+            </motion.div>
+          )}
+
+          {activeTab === 'gestao_alunos' && (
+            <motion.div
+              key="tab-gestao-alunos"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.2 }}
+            >
+              <GestaoEstudantesTurmas
+                currentClassroomId={currentClassroomId}
+                onStudentTransferred={onStudentTransferred}
+                onNavigateToDiagnostic={() => handleTabChange('relatorio')}
               />
             </motion.div>
           )}

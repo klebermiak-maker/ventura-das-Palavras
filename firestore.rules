@@ -70,7 +70,7 @@ service cloud.firestore {
                       && isValidStudentPerformance(incoming())
                       && incoming().studentId == existing().studentId
                       && incoming().classroomId == classroomId;
-        allow delete: if false;
+        allow delete: if isValidId(studentId) && isValidId(classroomId);
       }
     }
   }

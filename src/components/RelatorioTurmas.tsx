@@ -38,12 +38,14 @@ import { BNCCSkill, UserStats } from '../types/game';
 import { getPlayerLevelInfo } from '../utils/levels';
 import { soundManager } from '../utils/audio';
 import { RankingEstudantes } from './RankingEstudantes';
+import { TransferClassroomModal } from './TransferClassroomModal';
 
 interface Props {
   userStats: UserStats;
   currentClassroomId: string;
   onNavigate: (view: string) => void;
   onOpenIdentityModal: () => void;
+  onStudentTransferred?: (studentName: string, newClassroomId: string, newClassroomName: string) => void;
 }
 
 export const RelatorioTurmas: React.FC<Props> = ({
@@ -51,6 +53,7 @@ export const RelatorioTurmas: React.FC<Props> = ({
   currentClassroomId,
   onNavigate,
   onOpenIdentityModal,
+  onStudentTransferred,
 }) => {
   const [classrooms, setClassrooms] = useState<FirebaseClassroom[]>([]);
   const [selectedClassId, setSelectedClassId] = useState<string>(currentClassroomId || 'turma-3a');
@@ -59,6 +62,10 @@ export const RelatorioTurmas: React.FC<Props> = ({
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncSuccess, setSyncSuccess] = useState(false);
   const [gradeFilter, setGradeFilter] = useState<'all' | '3' | '5' | '4'>('all');
+
+  // Transfer Student Class Modal state
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+  const [selectedStudentForTransfer, setSelectedStudentForTransfer] = useState<FirebaseStudentPerformance | null>(null);
 
   // Modal create class state
   const [isCreateOpen, setIsCreateOpen] = useState(false);
@@ -580,21 +587,44 @@ export const RelatorioTurmas: React.FC<Props> = ({
       <div className="bg-white rounded-3xl border border-slate-200 shadow-xs overflow-hidden">
         <div className="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-lg font-extrabold text-slate-900 font-display">
-              Quadro de Desempenho dos Alunos
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="text-lg font-extrabold text-slate-900 font-display">
+                Quadro de Desempenho dos Alunos
+              </h3>
+              <span className="text-[11px] font-mono bg-indigo-50 text-indigo-700 font-bold px-2 py-0.5 rounded-md border border-indigo-200">
+                {students.length} alunos
+              </span>
+            </div>
             <p className="text-xs text-slate-500 mt-0.5">
-              Registros individuais salvos no Firebase Firestore
+              Registros individuais salvos no Firebase Firestore com opção de remanejar turma
             </p>
           </div>
 
-          <button
-            onClick={onOpenIdentityModal}
-            className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 cursor-pointer"
-          >
-            <UserCheck className="w-3.5 h-3.5" />
-            <span>Alterar Aluno Ativo</span>
-          </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                if (students.length > 0) {
+                  setSelectedStudentForTransfer(students[0]);
+                  setIsTransferModalOpen(true);
+                }
+              }}
+              disabled={students.length === 0}
+              className="text-xs font-bold text-amber-950 bg-amber-400 hover:bg-amber-300 disabled:opacity-50 px-3.5 py-2 rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs border border-amber-500/30"
+              title="Corrigir a turma de um aluno que selecionou a turma errada"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              <span>Alterar Turma de Aluno 🔄</span>
+            </button>
+
+            <button
+              onClick={onOpenIdentityModal}
+              className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 cursor-pointer px-3 py-2 rounded-xl bg-indigo-50/70 hover:bg-indigo-100 transition-colors"
+            >
+              <UserCheck className="w-3.5 h-3.5" />
+              <span>Trocar Aluno Conectado</span>
+            </button>
+          </div>
         </div>
 
         {students.length > 0 ? (
@@ -602,15 +632,16 @@ export const RelatorioTurmas: React.FC<Props> = ({
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 border-b border-slate-100 font-mono uppercase text-slate-500">
                 <tr>
-                  <th className="px-6 py-3 font-semibold">Posição</th>
-                  <th className="px-6 py-3 font-semibold">Estudante</th>
-                  <th className="px-6 py-3 font-semibold">Nível / Patente</th>
-                  <th className="px-6 py-3 font-semibold text-right">Pontos</th>
-                  <th className="px-6 py-3 font-semibold text-right">Estrelas</th>
-                  <th className="px-6 py-3 font-semibold text-center">Fatos (EF15)</th>
-                  <th className="px-6 py-3 font-semibold text-center">Ideia (EF35)</th>
-                  <th className="px-6 py-3 font-semibold text-center">Pistas (EF35)</th>
-                  <th className="px-6 py-3 font-semibold text-center">Acentos (EF05)</th>
+                  <th className="px-5 py-3 font-semibold">Posição</th>
+                  <th className="px-5 py-3 font-semibold">Estudante</th>
+                  <th className="px-5 py-3 font-semibold">Nível / Patente</th>
+                  <th className="px-5 py-3 font-semibold text-right">Pontos</th>
+                  <th className="px-5 py-3 font-semibold text-right">Estrelas</th>
+                  <th className="px-4 py-3 font-semibold text-center">Fatos (EF15)</th>
+                  <th className="px-4 py-3 font-semibold text-center">Ideia (EF35)</th>
+                  <th className="px-4 py-3 font-semibold text-center">Pistas (EF35)</th>
+                  <th className="px-4 py-3 font-semibold text-center">Acentos (EF05)</th>
+                  <th className="px-5 py-3 font-semibold text-center">Ação do Professor</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -623,10 +654,10 @@ export const RelatorioTurmas: React.FC<Props> = ({
                         isCurrent ? 'bg-indigo-50/40 font-semibold' : ''
                       }`}
                     >
-                      <td className="px-6 py-3.5 font-mono text-slate-400">
+                      <td className="px-5 py-3.5 font-mono text-slate-400">
                         {idx === 0 ? '🥇 1º' : idx === 1 ? '🥈 2º' : idx === 2 ? '🥉 3º' : `${idx + 1}º`}
                       </td>
-                      <td className="px-6 py-3.5 font-medium text-slate-900">
+                      <td className="px-5 py-3.5 font-medium text-slate-900">
                         <div className="flex items-center gap-1.5">
                           <span>{student.studentName}</span>
                           {isCurrent && (
@@ -636,34 +667,48 @@ export const RelatorioTurmas: React.FC<Props> = ({
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-3.5 text-slate-600">
+                      <td className="px-5 py-3.5 text-slate-600">
                         {student.levelTitle} (Nív. {student.levelNumber})
                       </td>
-                      <td className="px-6 py-3.5 font-mono font-bold text-slate-900 text-right tabular-nums">
+                      <td className="px-5 py-3.5 font-mono font-bold text-slate-900 text-right tabular-nums">
                         {student.score}
                       </td>
-                      <td className="px-6 py-3.5 font-mono text-amber-600 text-right tabular-nums">
+                      <td className="px-5 py-3.5 font-mono text-amber-600 text-right tabular-nums">
                         ⭐ {student.starsEarned}
                       </td>
-                      <td className="px-6 py-3.5 text-center font-mono">
+                      <td className="px-4 py-3.5 text-center font-mono">
                         {student.ef15lp03_attempted > 0
                           ? `${Math.round((student.ef15lp03_correct / student.ef15lp03_attempted) * 100)}%`
                           : '-'}
                       </td>
-                      <td className="px-6 py-3.5 text-center font-mono">
+                      <td className="px-4 py-3.5 text-center font-mono">
                         {student.ef35lp03_attempted > 0
                           ? `${Math.round((student.ef35lp03_correct / student.ef35lp03_attempted) * 100)}%`
                           : '-'}
                       </td>
-                      <td className="px-6 py-3.5 text-center font-mono">
+                      <td className="px-4 py-3.5 text-center font-mono">
                         {student.ef35lp04_attempted > 0
                           ? `${Math.round((student.ef35lp04_correct / student.ef35lp04_attempted) * 100)}%`
                           : '-'}
                       </td>
-                      <td className="px-6 py-3.5 text-center font-mono">
+                      <td className="px-4 py-3.5 text-center font-mono">
                         {student.ef05lp03_attempted > 0
                           ? `${Math.round((student.ef05lp03_correct / student.ef05lp03_attempted) * 100)}%`
                           : '-'}
+                      </td>
+                      <td className="px-5 py-3.5 text-center">
+                        <button
+                          onClick={() => {
+                            soundManager.playClick();
+                            setSelectedStudentForTransfer(student);
+                            setIsTransferModalOpen(true);
+                          }}
+                          className="px-3 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs transition-all cursor-pointer shadow-2xs hover:shadow-xs inline-flex items-center gap-1 border border-amber-500/30"
+                          title="Se o aluno selecionou a turma errada, clique aqui para alterar para a turma correta"
+                        >
+                          <RefreshCw className="w-3 h-3 text-slate-900" />
+                          <span>Alterar Turma 🔄</span>
+                        </button>
                       </td>
                     </tr>
                   );
@@ -748,6 +793,29 @@ export const RelatorioTurmas: React.FC<Props> = ({
           </div>
         </div>
       )}
+
+      {/* Transfer Student Classroom Modal */}
+      <AnimatePresence>
+        {isTransferModalOpen && selectedStudentForTransfer && (
+          <TransferClassroomModal
+            isOpen={isTransferModalOpen}
+            onClose={() => {
+              setIsTransferModalOpen(false);
+              setSelectedStudentForTransfer(null);
+            }}
+            student={selectedStudentForTransfer}
+            currentClassroomId={selectedStudentForTransfer.classroomId || selectedClassId}
+            currentClassroomName={classrooms.find(c => c.id === (selectedStudentForTransfer.classroomId || selectedClassId))?.name}
+            onSuccess={(updatedStudent, newClassId, newClassName) => {
+              // Reload current classroom students list so the transferred student disappears if moved away
+              loadStudents(selectedClassId);
+              if (onStudentTransferred) {
+                onStudentTransferred(updatedStudent.studentName, newClassId, newClassName);
+              }
+            }}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 };
