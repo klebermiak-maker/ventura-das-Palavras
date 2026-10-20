@@ -51,7 +51,10 @@ export const BNCC_SKILLS_INFO: Record<string, BNCCSkillInfo> = {
   },
 };
 
-export const READING_TEXTS: ReadingText[] = [
+// =========================================================================
+// 1. TEXTOS EXCLUSIVOS DA MISSÃO 1: DETETIVE DOS FATOS (EF15LP03)
+// =========================================================================
+export const EXPLICIT_TEXTS: ReadingText[] = [
   {
     id: 'tatu-bola',
     title: 'O Resgate do Pequeno Tatu-Bola',
@@ -77,83 +80,109 @@ export const READING_TEXTS: ReadingText[] = [
       {
         id: 4,
         text: 'O bichinho parecia apenas desorientado pelo calor das dez horas. Marina colocou algumas gotas de água perto de uma folha larga e o pequeno animal bebeu com calma antes de sumir entre os arbustos protegidos do parque nacional.',
+        highlightClue: 'Marina colocou algumas gotas de água perto de uma folha larga',
       },
     ],
   },
   {
-    id: 'telescopio-marina',
-    title: 'A Janela para o Universo',
-    genre: 'Notícia Escolar',
-    authorOrSource: 'Jornal Mural da Escola Primavera',
-    themeIcon: '🔭',
-    paragraphs: [
-      {
-        id: 1,
-        text: 'Na última sexta-feira à noite, o pátio da Escola Municipal Primavera transformou-se em um verdadeiro observatório astronômico. O professor Marcelo instalou um telescópio refletor de setenta milímetros no gramado central para a observação da Lua e dos planetas.',
-        highlightClue: 'última sexta-feira à noite, o pátio da Escola Municipal Primavera transformou-se em um verdadeiro observatório astronômico',
-      },
-      {
-        id: 2,
-        text: 'Mais de quarenta alunos do quarto ano compareceram agasalhados com casacos e toucas de lã. Quando a aluna Sofia olhou pela lente pela primeira vez, seus olhos brilharam: ela pôde ver nitidamente as crateras cinzentas da Lua e quatro luas brilhantes orbitando Júpiter.',
-        highlightClue: 'Mais de quarenta alunos do quarto ano compareceram',
-      },
-      {
-        id: 3,
-        text: 'O objetivo da atividade não era apenas olhar as estrelas, mas inspirar as crianças a compreenderem que a ciência nasce da curiosidade diária e do cuidado com o nosso planeta Terra.',
-        highlightClue: 'inspirar as crianças a compreenderem que a ciência nasce da curiosidade diária',
-      },
-    ],
-  },
-  {
-    id: 'sabedoria-formiga',
-    title: 'A Lição do Riacho das Pedras',
-    genre: 'Fábula',
-    authorOrSource: 'Adaptação do Folclore Brasileiro',
-    themeIcon: '🐜',
-    paragraphs: [
-      {
-        id: 1,
-        text: 'Uma formiguinha sapeca chamada Zoca queria atravessar o riacho cristalino para alcançar uma macieira carregada de frutos suculentos. O riacho corria com muita pressa e as águas pareciam gigantescas para alguém do tamanho dela.',
-        highlightClue: 'alcançar uma macieira carregada de frutos suculentos',
-      },
-      {
-        id: 2,
-        text: 'Um besouro que passava por ali zombou da formiga, dizendo que ela jamais conseguiria superar um obstáculo tão largo sem asas como as dele. Mas Zoca não se irritou; em vez de desistir, procurou por perto e encontrou uma folha seca e leve de embaúba.',
-        highlightClue: 'encontrou uma folha seca e leve de embaúba',
-      },
-      {
-        id: 3,
-        text: 'Com a ajuda de suas irmãs do formigueiro, ela empurrou a folha até a margem e usou um graveto fino como leme. Navegou com segurança até o outro lado, provando que a inteligência e a cooperação realizam o que a força bruta não consegue.',
-        highlightClue: 'inteligência e a cooperação realizam o que a força bruta não consegue',
-      },
-    ],
-  },
-  {
-    id: 'horta-comunitaria',
-    title: 'Mãos Verdes na Cidade',
+    id: 'serra-capivara',
+    title: 'A Expedição Arqueológica na Serra da Capivara',
     genre: 'Curiosidade Científica',
-    authorOrSource: 'Boletim Sustentabilidade na Prática',
-    themeIcon: '🌱',
+    authorOrSource: 'Boletim Museu do Homem Americano',
+    themeIcon: '🏺',
     paragraphs: [
       {
         id: 1,
-        text: 'Em um terreno que antes acumulava apenas entulho e pneus velhos no bairro Vila Esperança, os moradores se uniram para criar uma horta comunitária agroecológica. Em apenas seis meses de trabalho coletivo nos finais de semana, o espaço ganhou canteiros suspensos de cenoura, alface crespa e morango.',
-        highlightClue: 'seis meses de trabalho coletivo nos finais de semana',
+        text: 'No sul do estado do Piauí, a arqueóloga Dra. Helena liderou uma equipe de cinco pesquisadores até o Boqueirão da Pedra Furada. A expedição ocorreu em uma quinta-feira fria de julho, com ventos fortes que sopravam sobre os imensos paredões de arenito.',
+        highlightClue: 'sul do estado do Piauí, a arqueóloga Dra. Helena liderou uma equipe de cinco pesquisadores',
       },
       {
         id: 2,
-        text: 'As crianças da comunidade foram as responsáveis por plantar mudas de girassol e alecrim ao redor dos canteiros, pois essas flores atraem abelhas nativas sem ferrão, fundamentais para a polinização de todas as verduras.',
-        highlightClue: 'essas flores atraem abelhas nativas sem ferrão, fundamentais para a polinização',
+        text: 'Utilizando lanternas de LED potente e pincéis de cerdas ultramacias, a equipe limpou com delicadeza uma rocha protegida da chuva. Lá surgiram pinturas rupestres vermelhas feitas com óxido de ferro há mais de doze mil anos, representando bandos de cervos e capivaras em movimento.',
+        highlightClue: 'pinturas rupestres vermelhas feitas com óxido de ferro há mais de doze mil anos',
       },
       {
         id: 3,
-        text: 'Além de fornecer alimentos frescos e sem veneno para mais de oitenta famílias vizinhas, a horta transformou a convivência do bairro, tornando as tardes de domingo mais alegres e unidas.',
+        text: 'Para catalogar o sítio sem danificar o patrimônio histórico, os arqueólogos usaram um scanner a laser tridimensional importado de Portugal, registrando cada traço com precisão milimétrica.',
+        highlightClue: 'scanner a laser tridimensional importado de Portugal',
+      },
+    ],
+  },
+  {
+    id: 'tartaruga-marinha',
+    title: 'O Ninho da Tartaruga-de-Pente em Noronha',
+    genre: 'Notícia Escolar',
+    authorOrSource: 'Informativo Mar & Preservação',
+    themeIcon: '🐢',
+    paragraphs: [
+      {
+        id: 1,
+        text: 'Na madrugada de domingo, exatamente às três horas e quinze minutos, o biólogo André avistou uma tartaruga-de-pente fêmea subindo as areias douradas da Praia do Leão, no arquipélago de Fernando de Noronha.',
+        highlightClue: 'madrugada de domingo, exatamente às três horas e quinze minutos, na Praia do Leão',
+      },
+      {
+        id: 2,
+        text: 'Com paciência e em silêncio absoluto para não assustar o réptil, André registrou a desova: a tartaruga depositou com cuidado cento e vinte e oito ovos redondos em um buraco de cinquenta centímetros de profundidade cavado com suas nadadeiras traseiras.',
+        highlightClue: 'depositou com cuidado cento e vinte e oito ovos redondos em um buraco de cinquenta centímetros',
+      },
+      {
+        id: 3,
+        text: 'Antes do nascer do sol, a equipe do Projeto Tamar cercou a área com estacas de madeira sustentável e uma placa amarela indicando o número de monitoramento quarenta e dois.',
+        highlightClue: 'placa amarela indicando o número de monitoramento quarenta e dois',
+      },
+    ],
+  },
+  {
+    id: 'robo-sucatinha',
+    title: 'A Feira de Robótica da Escola Santos Dumont',
+    genre: 'Notícia Escolar',
+    authorOrSource: 'Gazeta Estudantil de Curitiba',
+    themeIcon: '🤖',
+    paragraphs: [
+      {
+        id: 1,
+        text: 'Na última quarta-feira, a aluna Beatriz, de dez anos de idade, conquistou a medalha de ouro na décima edição da Feira de Robótica Sustentável de Curitiba com seu projeto batizado de "Sucatinha".',
+        highlightClue: 'aluna Beatriz, de dez anos de idade, conquistou a medalha de ouro',
+      },
+      {
+        id: 2,
+        text: 'O robô foi totalmente construído a partir de materiais recolhidos na reciclagem da escola: o corpo era composto por seis latinhas de refrigerante de alumínio, duas tampinhas de garrafa PET faziam os olhos giratórios e as rodas vieram de um carrinho de plástico quebrado.',
+        highlightClue: 'seis latinhas de refrigerante de alumínio, duas tampinhas de garrafa PET e rodas de carrinho quebrado',
+      },
+      {
+        id: 3,
+        text: 'Alimentado por uma única bateria recarregável de nove volts, o robozinho era capaz de varrer pequenas folhas secas caídas nos corredores da escola usando uma escova de cerdas de sisal.',
+        highlightClue: 'alimentado por uma única bateria recarregável de nove volts',
+      },
+    ],
+  },
+  {
+    id: 'festival-pipas',
+    title: 'O Grande Festival de Pipas de Santo André',
+    genre: 'Crônica',
+    authorOrSource: 'Caderno Regional do ABC',
+    themeIcon: '🪁',
+    paragraphs: [
+      {
+        id: 1,
+        text: 'O céu do Parque Central de Santo André ganhou cores vibrantes no último domingo ensolarado. Mais de duzentos e cinquenta participantes se reuniram no gramado aberto para a décima quinta edição do Festival de Pipas Ecológicas sem Cerol.',
+        highlightClue: 'Mais de duzentos e cinquenta participantes se reuniram no gramado aberto',
+      },
+      {
+        id: 2,
+        text: 'O grande destaque da tarde foi a pipa confeccionada pelo aposentado Seu Manoel, de sessenta e oito anos. Ele levou três semanas inteiras para construir um dragão alado de seis metros de comprimento, utilizando varetas de taquara tratada e folhas de papel de seda amarelo e verde.',
+        highlightClue: 'Seu Manoel, de sessenta e oito anos, construiu um dragão de seis metros de comprimento',
+      },
+      {
+        id: 3,
+        text: 'A comissão julgadora avaliou quesitos como beleza estética, estabilidade no voo e altura máxima atingida, premiando o dragão gigante com o troféu Estrela dos Ventos.',
+        highlightClue: 'premiando o dragão gigante com o troféu Estrela dos Ventos',
       },
     ],
   },
 ];
 
-// EF15LP03: Informações Explícitas (Localizar no texto)
+// EF15LP03: Questões Explícitas Exclusivas
 export const EXPLICIT_QUESTIONS: ExplicitQuestion[] = [
   {
     id: 'exp-1',
@@ -166,7 +195,7 @@ export const EXPLICIT_QUESTIONS: ExplicitQuestion[] = [
         id: 'a',
         text: 'Na terça-feira, no sertão da Caatinga.',
         isCorrect: true,
-        explanation: 'Muito bem! No primeiro parágrafo está escrito de forma clara: "Em uma manhã ensolarada de terça-feira no sertão da Caatinga".',
+        explanation: 'Muito bem! No primeiro parágrafo está escrito com clareza: "Em uma manhã ensolarada de terça-feira no sertão da Caatinga".',
       },
       {
         id: 'b',
@@ -190,189 +219,267 @@ export const EXPLICIT_QUESTIONS: ExplicitQuestion[] = [
   },
   {
     id: 'exp-2',
-    textId: 'tatu-bola',
+    textId: 'serra-capivara',
     paragraphRef: 2,
-    question: 'Qual era a cor e o tamanho aproximado da esfera curiosa encontrada por Tiago?',
-    clueWord: 'cor marrom-amarelada, do tamanho aproximado de uma bola de tênis',
+    question: 'Há quanto tempo foram feitas as pinturas rupestres encontradas e quais animais elas representavam?',
+    clueWord: 'há mais de doze mil anos, representando bandos de cervos e capivaras',
     options: [
       {
         id: 'a',
-        text: 'Era de cor verde-oliva e do tamanho de uma melancia.',
-        isCorrect: false,
-        explanation: 'No segundo parágrafo, o texto informa que a cor era marrom-amarelada e tinha o tamanho de uma bola de tênis.',
+        text: 'Há mais de doze mil anos, representando cervos e capivaras.',
+        isCorrect: true,
+        explanation: 'Exato! O parágrafo 2 confirma explicitamente: "feitas com óxido de ferro há mais de doze mil anos, representando bandos de cervos e capivaras".',
       },
       {
         id: 'b',
-        text: 'Era de cor marrom-amarelada e do tamanho aproximado de uma bola de tênis.',
-        isCorrect: true,
-        explanation: 'Excelente! O parágrafo 2 diz exatamente: "uma esfera perfeita de cor marrom-amarelada, do tamanho aproximado de uma bola de tênis".',
+        text: 'Há apenas cem anos, representando leões e zebras africanas.',
+        isCorrect: false,
+        explanation: 'O texto diz claramente: há mais de doze mil anos, e os animais são cervos e capivaras.',
       },
       {
         id: 'c',
-        text: 'Era cinza-escura e do tamanho de uma moeda antiga.',
+        text: 'Há quinhentos anos, com figuras de navios portugueses.',
         isCorrect: false,
-        explanation: 'Verifique o parágrafo 2: o texto especifica a cor marrom-amarelada e o tamanho de uma bola de tênis.',
+        explanation: 'O sítio é pré-histórico, com mais de doze mil anos de idade.',
       },
       {
         id: 'd',
-        text: 'Era branca com listras pretas e do tamanho de uma bola de futebol.',
+        text: 'Há dois mil anos, representando apenas pássaros e peixes.',
         isCorrect: false,
-        explanation: 'O texto descreve o tatu-bola fechado: marrom-amarelado e do tamanho de uma bola de tênis.',
+        explanation: 'Releia o segundo parágrafo: as figuras são bandos de cervos e capivaras.',
       },
     ],
   },
   {
     id: 'exp-3',
-    textId: 'telescopio-marina',
+    textId: 'tartaruga-marinha',
     paragraphRef: 2,
-    question: 'Quantos alunos do quarto ano compareceram à noite de observação astronômica?',
-    clueWord: 'Mais de quarenta alunos do quarto ano compareceram',
+    question: 'Quantos ovos a tartaruga-de-pente depositou no ninho na Praia do Leão?',
+    clueWord: 'cento e vinte e oito ovos redondos',
     options: [
       {
         id: 'a',
-        text: 'Exatamente dez alunos.',
+        text: 'Exatamente cinquenta ovos.',
         isCorrect: false,
-        explanation: 'O número citado no início do parágrafo 2 é bem maior: mais de quarenta alunos.',
+        explanation: 'Cinquenta centímetros era a profundidade do buraco, não a quantidade de ovos!',
       },
       {
         id: 'b',
-        text: 'Cerca de cem professores da cidade.',
-        isCorrect: false,
-        explanation: 'Quem compareceu foram os alunos do quarto ano, não cem professores.',
+        text: 'Cento e vinte e oito ovos redondos.',
+        isCorrect: true,
+        explanation: 'Correto! No parágrafo 2 está escrito de forma explícita: "depositou com cuidado cento e vinte e oito ovos redondos".',
       },
       {
         id: 'c',
-        text: 'Mais de quarenta alunos do quarto ano.',
-        isCorrect: true,
-        explanation: 'Correto! A informação explícita está no início do parágrafo 2: "Mais de quarenta alunos do quarto ano compareceram".',
+        text: 'Apenas quarenta e dois ovos.',
+        isCorrect: false,
+        explanation: 'Quarenta e dois é o número da placa de monitoramento colocada pelos biólogos.',
       },
       {
         id: 'd',
-        text: 'Apenas a aluna Sofia e o professor Marcelo.',
+        text: 'Mais de trezentos ovos gigantes.',
         isCorrect: false,
-        explanation: 'O parágrafo 2 cita que mais de quarenta alunos estavam presentes no gramado.',
+        explanation: 'O número exato registrado pelo biólogo foi cento e vinte e oito.',
       },
     ],
   },
   {
     id: 'exp-4',
-    textId: 'sabedoria-formiga',
+    textId: 'robo-sucatinha',
     paragraphRef: 2,
-    question: 'O que a formiguinha Zoca usou como embarcação para conseguir cruzar o riacho?',
-    clueWord: 'folha seca e leve de embaúba',
+    question: 'Quais materiais da reciclagem escolar formavam o corpo do robô Sucatinha?',
+    clueWord: 'seis latinhas de refrigerante de alumínio, duas tampinhas de garrafa PET e rodas de carrinho',
     options: [
       {
         id: 'a',
-        text: 'Uma casca de noz amarrada com cipó.',
-        isCorrect: false,
-        explanation: 'No texto não há menção a casca de noz. O parágrafo 2 cita uma folha de embaúba.',
+        text: 'Seis latinhas de alumínio, duas tampinhas de garrafa PET e rodas de carrinho de plástico.',
+        isCorrect: true,
+        explanation: 'Perfeito! No parágrafo 2 temos todos esses detalhes descritos passo a passo.',
       },
       {
         id: 'b',
-        text: 'As asas do besouro que passava pelo local.',
+        text: 'Tubos de ferro pesado, placas de computador novo e vidro blindado.',
         isCorrect: false,
-        explanation: 'O besouro zombou dela e não a ajudou a voar.',
+        explanation: 'O robô foi feito de materiais reciclados simples da escola.',
       },
       {
         id: 'c',
-        text: 'Uma folha seca e leve de embaúba.',
-        isCorrect: true,
-        explanation: 'Perfeito! No parágrafo 2 está escrito com todas as letras: "encontrou uma folha seca e leve de embaúba".',
+        text: 'Garrafas térmicas quebradas e correias de bicicleta velha.',
+        isCorrect: false,
+        explanation: 'Esses materiais não aparecem na descrição do projeto Sucatinha.',
       },
       {
         id: 'd',
-        text: 'Uma ponte de pedras empilhadas pelas formigas.',
+        text: 'Apenas caixas de papelão e fita crepe.',
         isCorrect: false,
-        explanation: 'Ela navegou em uma folha seca e leve de embaúba.',
+        explanation: 'O texto especifica latinhas de alumínio, tampinhas PET e rodinhas de plástico.',
       },
     ],
   },
   {
     id: 'exp-5',
-    textId: 'horta-comunitaria',
+    textId: 'festival-pipas',
     paragraphRef: 2,
-    question: 'Por qual motivo as crianças plantaram mudas de girassol e alecrim ao redor dos canteiros?',
-    clueWord: 'essas flores atraem abelhas nativas sem ferrão, fundamentais para a polinização',
+    question: 'Qual era o comprimento do dragão alado construído por Seu Manoel e qual material ele usou?',
+    clueWord: 'seis metros de comprimento, utilizando varetas de taquara tratada e folhas de papel de seda',
     options: [
       {
         id: 'a',
-        text: 'Para espantar pássaros que comiam as verduras.',
-        isCorrect: false,
-        explanation: 'O texto explica que elas plantaram para atrair abelhas, não para espantar pássaros.',
+        text: 'Seis metros de comprimento, feito com varetas de taquara e papel de seda.',
+        isCorrect: true,
+        explanation: 'Sensacional! O parágrafo 2 cita textualmente: "um dragão alado de seis metros de comprimento, utilizando varetas de taquara tratada e folhas de papel de seda".',
       },
       {
         id: 'b',
-        text: 'Porque essas flores atraem abelhas nativas, essenciais para a polinização.',
-        isCorrect: true,
-        explanation: 'Corretíssimo! O parágrafo 2 declara: "essas flores atraem abelhas nativas sem ferrão, fundamentais para a polinização de todas as verduras".',
+        text: 'Quinze metros de comprimento, feito com sacos plásticos de supermercado.',
+        isCorrect: false,
+        explanation: 'A décima quinta era a edição do festival; o dragão tinha seis metros.',
       },
       {
         id: 'c',
-        text: 'Apenas para enfeitar a entrada da escola.',
+        text: 'Dois metros de comprimento, feito de tecido grosso de algodão cru.',
         isCorrect: false,
-        explanation: 'O motivo ecológico foi atrair abelhas para a polinização dos canteiros.',
+        explanation: 'O texto indica taquara e papel de seda amarelo e verde.',
       },
       {
         id: 'd',
-        text: 'Para fazer chá para os finais de semana.',
+        text: 'Cinquenta metros de comprimento, sustentado por fios de metal.',
         isCorrect: false,
-        explanation: 'A função explícita descrita é a polinização feita pelas abelhas.',
+        explanation: 'O dragão media seis metros de comprimento.',
       },
     ],
   },
 ];
 
-// EF35LP03: Ideia Central do Texto (Compreensão Global)
-export const CENTRAL_IDEA_QUESTIONS: CentralIdeaQuestion[] = [
+// =========================================================================
+// 2. TEXTOS EXCLUSIVOS DA MISSÃO 2: A BÚSSOLA DO TEMA (EF35LP03)
+// =========================================================================
+export const CENTRAL_IDEA_TEXTS: ReadingText[] = [
   {
-    id: 'central-1',
-    textId: 'tatu-bola',
-    question: 'Qual é a ideia central (tema principal) do texto sobre o tatu-bola?',
-    bestHeadlineQuestion: 'Se você fosse o editor de um jornal, qual seria a melhor manchete para este texto?',
-    learningTip: 'Dica da Bússola: A ideia central resume o assunto inteiro da história, e não apenas um detalhe como a cor da garrafa ou o juazeiro!',
-    options: [
+    id: 'telescopio-marina',
+    title: 'A Janela para o Universo',
+    genre: 'Notícia Escolar',
+    authorOrSource: 'Jornal Mural da Escola Primavera',
+    themeIcon: '🔭',
+    paragraphs: [
       {
-        id: 'a',
-        text: 'As características curiosas do tatu-bola e como ele se protege na Caatinga.',
-        isCorrect: true,
-        explanation: 'Isso aí! Todo o texto é construído para nos apresentar a espécie do tatu-bola, suas defesas naturais e seu habitat.',
+        id: 1,
+        text: 'Na última sexta-feira à noite, o pátio da Escola Municipal Primavera transformou-se em um verdadeiro observatório astronômico. O professor Marcelo instalou um telescópio refletor no gramado central para a observação da Lua e dos planetas.',
       },
       {
-        id: 'b',
-        text: 'A importância de levar garrafas de água fresca para caminhadas no sertão.',
-        isCorrect: false,
-        explanation: 'Isso é apenas um detalhe passageiro do primeiro parágrafo, não a ideia central do texto todo.',
+        id: 2,
+        text: 'Mais de quarenta alunos compareceram agasalhados. Quando olharam pela lente pela primeira vez, seus olhos se encheram de maravilhamento: puderam ver as crateras da Lua e quatro luas brilhantes orbitando Júpiter.',
       },
       {
-        id: 'c',
-        text: 'O tamanho das raízes de árvores antigas chamadas juazeiros.',
-        isCorrect: false,
-        explanation: 'O juazeiro foi apenas o local onde avistaram o animal; o foco principal é o tatu-bola.',
-      },
-      {
-        id: 'd',
-        text: 'As diferenças entre bolas de tênis e bolas de futebol.',
-        isCorrect: false,
-        explanation: 'A bola de tênis foi usada apenas como comparação visual de tamanho.',
+        id: 3,
+        text: 'O objetivo da atividade não era apenas olhar as estrelas, mas inspirar as crianças a compreenderem que a ciência nasce da curiosidade diária e do amor pelo cuidado com o nosso planeta Terra.',
       },
     ],
   },
   {
-    id: 'central-2',
+    id: 'colibri-valente',
+    title: 'A Fábula do Colibri e o Grande Incêndio',
+    genre: 'Fábula',
+    authorOrSource: 'Conto Popular da Amazônia',
+    themeIcon: '🦜',
+    paragraphs: [
+      {
+        id: 1,
+        text: 'Um incêndio feroz começou a queimar as copas das castanheiras antigas na mata. Desesperados com a fumaça cinzenta, o jacaré, a onça-pintada e a anta correram em disparada rumo ao rio, certos de que nada mais poderia salvar a floresta.',
+      },
+      {
+        id: 2,
+        text: 'No entanto, um minúsculo colibri de peito verde voava sem parar do rio até as chamas. Ele enchia seu biquinho com três gotinhas de água cristalina e as derramava com bravura sobre o fogo crepitante.',
+      },
+      {
+        id: 3,
+        text: 'A onça gritou: "Você está louco, passarinho? Acha mesmo que vai apagar esse incêndio sozinho?". E o colibri respondeu sereno: "Eu sei que sou pequeno, mas estou cumprindo a minha parte". Inspirados por ele, centenas de pássaros uniram-se à tarefa e ajudaram a resfriar a mata.',
+      },
+    ],
+  },
+  {
+    id: 'ponte-reconciliacao',
+    title: 'A Velha Ponte de Cedro',
+    genre: 'Crônica',
+    authorOrSource: 'Histórias do Vale Verde',
+    themeIcon: '🌉',
+    paragraphs: [
+      {
+        id: 1,
+        text: 'Durante décadas, os moradores da Vila das Flores e da Vila das Pedras não conversavam entre si por causa de uma discussão sobre o limite das plantações. Entre as duas vilas, havia apenas um riacho raso e uma ponte de cedro abandonada.',
+      },
+      {
+        id: 2,
+        text: 'Após uma forte tempestade de verão arrancar metade das tábuas da ponte, os jovens estudantes de ambas as margens decidiram que já era hora de colocar um ponto final naquela divisão sem sentido.',
+      },
+      {
+        id: 3,
+        text: 'Sem avisar os adultos, eles trouxeram martelos, pregos e tábuas novas. Ao final da tarde, a ponte estava firme e enfeitada com flores coloridas. Quando os pais chegaram para procurá-los, encontraram todos rindo e compartilhando bolo de milho, provando que o diálogo constrói caminhos onde o orgulho só ergue barreiras.',
+      },
+    ],
+  },
+  {
+    id: 'guardiao-sementes',
+    title: 'O Guardião das Sementes Crioulas',
+    genre: 'Curiosidade Científica',
+    authorOrSource: 'Boletim Agroecologia & Vida',
+    themeIcon: '🌽',
+    paragraphs: [
+      {
+        id: 1,
+        text: 'No alto da Serra da Mantiqueira vive Seu Benedito, um agricultor de setenta e dois anos que guarda em pequenos potes de barro mais de cinquenta variedades de sementes tradicionais de milho roxo, abóbora e feijão.',
+      },
+      {
+        id: 2,
+        text: 'Enquanto muitas fazendas modernas plantam apenas um tipo de semente industrializada e dependem de venenos químicos, Seu Benedito troca sementes nativas com escolas e vizinhos sem cobrar um único centavo.',
+      },
+      {
+        id: 3,
+        text: 'Para ele, preservar essas sementes antigas é proteger a história de nossos antepassados, garantir comida saudável e salvar a biodiversidade para as próximas gerações que ainda vão nascer.',
+      },
+    ],
+  },
+  {
+    id: 'menino-cores',
+    title: 'O Menino que Coloria o Vento',
+    genre: 'Crônica',
+    authorOrSource: 'Revista Letras Infantis',
+    themeIcon: '🎨',
+    paragraphs: [
+      {
+        id: 1,
+        text: 'O bairro de Vila Cinzenta recebia esse nome porque todos os muros eram de concreto apagado e os moradores andavam de cabeça baixa, apressados para seus compromissos, sem trocar um "bom dia".',
+      },
+      {
+        id: 2,
+        text: 'Num sábado ensolarado, o menino Gael pegou sobras de tintas descartadas e pintou na parede do ponto de ônibus um enorme girassol sorridente acompanhado da frase: "Você já olhou pro céu hoje?".',
+      },
+      {
+        id: 3,
+        text: 'Aquele simples desenho mudou tudo: os vizinhos começaram a parar, sorrir e trazer seus próprios pincéis. Em poucas semanas, o cinza deu lugar a um festival de arte comunitária, mostrando como pequenos gestos de afeto têm o poder de transformar a convivência humana.',
+      },
+    ],
+  },
+];
+
+// EF35LP03: Questões de Ideia Central Exclusivas
+export const CENTRAL_IDEA_QUESTIONS: CentralIdeaQuestion[] = [
+  {
+    id: 'central-1',
     textId: 'telescopio-marina',
     question: 'Qual mensagem principal o autor deseja transmitir com a crônica da noite astronômica?',
     bestHeadlineQuestion: 'Qual opção expressa o sentido global de toda a reportagem escolar?',
-    learningTip: 'Dica da Bússola: Pense no objetivo final declarado pelo professor Marcelo para todos os estudantes.',
+    learningTip: 'Dica da Bússola: Observe o objetivo final declarado pelo professor Marcelo para todos os estudantes.',
     options: [
       {
         id: 'a',
-        text: 'A experiência prática com o telescópio desperta nas crianças o amor pela ciência e pela observação do mundo.',
+        text: 'A observação científica desperta o maravilhamento, o gosto pela ciência e a consciência de cuidar da Terra.',
         isCorrect: true,
         explanation: 'Sensacional! O texto mostra como a noite de observação serviu para conectar as crianças com o universo e despertar o gosto pela ciência.',
       },
       {
         id: 'b',
-        text: 'A importância de usar toucas de lã quando a temperatura cai à noite.',
+        text: 'A importância de usar toucas de lã grossas quando a temperatura cai à noite.',
         isCorrect: false,
         explanation: 'As roupas de frio foram apenas uma descrição de como estavam vestidos, não a mensagem central.',
       },
@@ -391,145 +498,254 @@ export const CENTRAL_IDEA_QUESTIONS: CentralIdeaQuestion[] = [
     ],
   },
   {
-    id: 'central-3',
-    textId: 'sabedoria-formiga',
-    question: 'Qual é o ensinamento (moral) central que resume a fábula da formiga Zoca?',
-    bestHeadlineQuestion: 'Qual ditado ou lição resume melhor o desfecho da fábula?',
-    learningTip: 'Dica da Bússola: Na fábula, a ideia central quase sempre é a lição que os personagens aprendem no final.',
+    id: 'central-2',
+    textId: 'colibri-valente',
+    question: 'Qual é o ensinamento (moral) central presente na fábula do colibri na Amazônia?',
+    bestHeadlineQuestion: 'Se você fosse dar um subtítulo para a fábula do colibri, qual seria o mais adequado?',
+    learningTip: 'Dica da Bússola: Pense na lição que a resposta do colibri ensinou a todos os animais da floresta.',
     options: [
       {
         id: 'a',
-        text: 'Com paciência, planejamento e união, é possível superar desafios que parecem impossíveis.',
+        text: 'Cada um deve fazer a sua parte com coragem, pois pequenas ações exemplares inspiram transformações coletivas.',
         isCorrect: true,
-        explanation: 'Exato! A fábula conclui demonstrando que a cooperação e a sabedoria vencem obstáculos maiores do que a força.',
+        explanation: 'Excelente! A atitude do pequeno colibri não era de orgulho, mas de responsabilidade, inspirando os outros a agirem juntos.',
       },
       {
         id: 'b',
-        text: 'Formigas devem sempre morar longe de riachos perigosos.',
+        text: 'Os animais pequenos devem sempre fugir antes que os animais grandes comecem a correr.',
         isCorrect: false,
-        explanation: 'O texto não ensina isso; a formiga conseguiu realizar a travessia com sucesso.',
+        explanation: 'A moral da história ensina o oposto: coragem e atitude mesmo diante de um obstáculo imenso.',
       },
       {
         id: 'c',
-        text: 'Os besouros são os animais mais sábios de toda a floresta.',
+        text: 'O fogo na floresta é um fenômeno divertido para os pássaros observarem do alto.',
         isCorrect: false,
-        explanation: 'Pelo contrário, o besouro zombou e se enganou ao achar que ela não conseguiria.',
+        explanation: 'O incêndio era uma tragédia ambiental que exigia união para ser combatida.',
       },
       {
         id: 'd',
-        text: 'Maçãs caídas na água ficam estragadas rapidamente.',
+        text: 'Apenas os jacarés e as antas têm força para tomar decisões na selva.',
         isCorrect: false,
-        explanation: 'A maçã é apenas a recompensa inicial, não a lição moral da história.',
+        explanation: 'Quem liderou a ação que inspirou a todos foi o menor de todos os pássaros.',
+      },
+    ],
+  },
+  {
+    id: 'central-3',
+    textId: 'ponte-reconciliacao',
+    question: 'Qual é a ideia central da história sobre a reconstrução da velha ponte de cedro?',
+    bestHeadlineQuestion: 'Qual manchete resumiria com precisão o desfecho da crônica entre as duas vilas?',
+    learningTip: 'Dica da Bússola: Foque na mudança de comportamento entre as duas comunidades vizinhas.',
+    options: [
+      {
+        id: 'a',
+        text: 'A cooperação e o diálogo entre os jovens foram capazes de superar desavenças antigas e unir a comunidade.',
+        isCorrect: true,
+        explanation: 'Corretíssimo! A reconstrução física da ponte simbolizou a reconciliação e a amizade entre as duas vilas.',
+      },
+      {
+        id: 'b',
+        text: 'A madeira de cedro é o melhor material para suportar chuvas fortes de verão.',
+        isCorrect: false,
+        explanation: 'A qualidade da madeira é um detalhe secundário; o tema é a união das pessoas.',
+      },
+      {
+        id: 'c',
+        text: 'O bolo de milho deve ser servido somente quando houver festas com martelos e pregos.',
+        isCorrect: false,
+        explanation: 'O lanche compartilhado foi apenas uma consequência da celebração da amizade.',
+      },
+      {
+        id: 'd',
+        text: 'Os adultos devem sempre proibir as crianças de realizar trabalhos manuais.',
+        isCorrect: false,
+        explanation: 'Pelo contrário, foram os jovens que ensinaram aos adultos uma lição de convivência pacífica.',
       },
     ],
   },
   {
     id: 'central-4',
-    textId: 'horta-comunitaria',
-    question: 'De forma geral, o que o texto demonstra sobre a horta comunitária?',
-    bestHeadlineQuestion: 'Qual é o tema principal da notícia sobre a Vila Esperança?',
-    learningTip: 'Dica da Bússola: Observe a transformação do espaço e o impacto na vida dos vizinhos.',
+    textId: 'guardiao-sementes',
+    question: 'De forma global, qual é o tema principal da reportagem sobre Seu Benedito?',
+    bestHeadlineQuestion: 'Qual título resume melhor o propósito de vida do agricultor da Mantiqueira?',
+    learningTip: 'Dica da Bússola: Veja o motivo pelo qual Seu Benedito guarda e compartilha sementes crioulas.',
     options: [
       {
         id: 'a',
-        text: 'A união da comunidade pode recuperar espaços abandonados e gerar alimentos saudáveis e convivência.',
+        text: 'A preservação das sementes nativas é essencial para proteger a biodiversidade, a saúde e a herança cultural.',
         isCorrect: true,
-        explanation: 'Muito bem! O texto mostra a transformação completa de um terreno de entulho em um lugar verde de saúde e união social.',
+        explanation: 'Perfeito! O texto demonstra como o trabalho tradicional de preservação de sementes protege a natureza e o futuro alimentar.',
       },
       {
         id: 'b',
-        text: 'O preço das sementes de cenoura nas lojas da cidade.',
+        text: 'Como fabricar potes de barro artesanais para vender em feiras turísticas.',
         isCorrect: false,
-        explanation: 'O texto não foca em valores financeiros ou comércio de sementes.',
+        explanation: 'Os potes de barro eram apenas os recipientes onde as sementes eram guardadas.',
       },
       {
         id: 'c',
-        text: 'Como fabricar pneus velhos a partir de borracha sintética.',
+        text: 'As desvantagens de morar na Serra da Mantiqueira durante as manhãs frias.',
         isCorrect: false,
-        explanation: 'Os pneus eram entulho que foi retirado no início, não o tema central.',
+        explanation: 'A localização geográfica é apenas o cenário onde a história acontece.',
       },
       {
         id: 'd',
-        text: 'A rotina de compras no supermercado nos finais de semana.',
+        text: 'O preço das abóboras e do milho nos grandes supermercados da capital.',
         isCorrect: false,
-        explanation: 'A horta comunitária produziu alimentos próprios para a vizinhança.',
+        explanation: 'Seu Benedito sequer cobrava dinheiro pelas sementes; seu objetivo era a conservação.',
+      },
+    ],
+  },
+  {
+    id: 'central-5',
+    textId: 'menino-cores',
+    question: 'O que o texto demonstra sobre o impacto da iniciativa artística de Gael no bairro?',
+    bestHeadlineQuestion: 'Qual lição sobre convivência humana resume o conto de Vila Cinzenta?',
+    learningTip: 'Dica da Bússola: Observe o que aconteceu com o humor e as atitudes dos moradores após o mural.',
+    options: [
+      {
+        id: 'a',
+        text: 'Pequenos atos de sensibilidade e arte têm a força de romper o isolamento e promover a empatia e união entre vizinhos.',
+        isCorrect: true,
+        explanation: 'Maravilhoso! A pintura do girassol desencadeou uma corrente positiva de convivência e alegria em toda a comunidade.',
+      },
+      {
+        id: 'b',
+        text: 'O concreto apagado é a cor mais recomendada para pintar pontos de ônibus.',
+        isCorrect: false,
+        explanation: 'O texto critica o cinza monótono e valoriza a explosão de cores e vida.',
+      },
+      {
+        id: 'c',
+        text: 'Pessoas com compromissos urgentes nunca devem olhar para o céu durante o dia.',
+        isCorrect: false,
+        explanation: 'A frase de Gael convidava justamente as pessoas a desacelerarem e apreciarem a vida.',
+      },
+      {
+        id: 'd',
+        text: 'As tintas descartadas perdem a cor em menos de duas horas sob a luz solar.',
+        isCorrect: false,
+        explanation: 'O mural permaneceu e inspirou todo o bairro a pintar novas obras comunitárias.',
       },
     ],
   },
 ];
 
-// EF35LP04: Informações Implícitas (Inferir / Ler nas entrelinhas)
+// =========================================================================
+// 3. TEXTOS EXCLUSIVOS DA MISSÃO 3: MAGO DAS ENTRELINHAS (EF35LP04)
+// =========================================================================
+export const IMPLICIT_TEXTS: ReadingText[] = [
+  {
+    id: 'sabedoria-formiga',
+    title: 'A Lição do Riacho das Pedras',
+    genre: 'Fábula',
+    authorOrSource: 'Adaptação do Folclore Brasileiro',
+    themeIcon: '🐜',
+    paragraphs: [
+      {
+        id: 1,
+        text: 'Uma formiguinha sapeca chamada Zoca queria atravessar o riacho cristalino para alcançar uma macieira carregada de frutos suculentos. O riacho corria com muita pressa e as águas pareciam gigantescas para alguém do tamanho dela.',
+      },
+      {
+        id: 2,
+        text: 'Um besouro que passava por ali zombou da formiga, dizendo que ela jamais conseguiria superar um obstáculo tão largo sem asas como as dele. Mas Zoca não se irritou; em vez de desistir, procurou por perto e encontrou uma folha seca e leve de embaúba.',
+      },
+      {
+        id: 3,
+        text: 'Com a ajuda de suas irmãs do formigueiro, ela empurrou a folha até a margem e usou um graveto fino como leme. Navegou com segurança até o outro lado, provando que a inteligência e a cooperação realizam o que a força bruta não consegue.',
+      },
+    ],
+  },
+  {
+    id: 'mala-sotao',
+    title: 'O Mistério da Mala do Sótão',
+    genre: 'Crônica',
+    authorOrSource: 'Coleção Segredos de Família',
+    themeIcon: '🗝️',
+    paragraphs: [
+      {
+        id: 1,
+        text: 'Durante uma tarde chuvosa na casa de campo, Lucas subiu as escadas de madeira rangente até o sótão empoeirado. Entre caixas de papelão e cortinas antigas, encontrou uma mala de couro marrom fechada com um pequeno cadeado de latão.',
+      },
+      {
+        id: 2,
+        text: 'Ao abrir a mala com a chave que repousava no fundo de uma xícara de porcelana, um suave cheiro de alfazema invadiu o ar. Dentro havia cadernos com caligrafia caprichada, fotografias em preto e branco de jovens sorridentes à beira de uma piscina olímpica e uma medalha dourada com a data de 1954.',
+      },
+      {
+        id: 3,
+        text: 'Lucas acariciou a fita de cetim desgastada da medalha e observou a foto: a jovem campeã no pódio tinha o mesmo sorriso travesso e o mesmo brilho no olhar de sua avó Clara, hoje com oitenta e cinco anos.',
+      },
+    ],
+  },
+  {
+    id: 'horta-comunitaria',
+    title: 'Mãos Verdes na Vila Esperança',
+    genre: 'Notícia Escolar',
+    authorOrSource: 'Boletim Sustentabilidade na Prática',
+    themeIcon: '🌱',
+    paragraphs: [
+      {
+        id: 1,
+        text: 'Em um terreno que antes acumulava apenas entulho e pneus velhos no bairro Vila Esperança, os moradores se uniram para criar uma horta comunitária agroecológica. Em apenas seis meses de trabalho coletivo nos finais de semana, o espaço ganhou canteiros suspensos de verduras frescas.',
+      },
+      {
+        id: 2,
+        text: 'As crianças da comunidade foram as responsáveis por plantar mudas de girassol e alecrim ao redor dos canteiros, pois essas flores atraem abelhas nativas sem ferrão, fundamentais para a polinização de todas as plantas.',
+      },
+      {
+        id: 3,
+        text: 'Além de fornecer alimentos frescos e sem veneno para mais de oitenta famílias vizinhas, a horta transformou a convivência do bairro, tornando as tardes de domingo mais alegres e unidas.',
+      },
+    ],
+  },
+  {
+    id: 'violino-meianoite',
+    title: 'O Relojoeiro e o Violino Misterioso',
+    genre: 'Crônica',
+    authorOrSource: 'Contos Urbanos Noturnos',
+    themeIcon: '🎻',
+    paragraphs: [
+      {
+        id: 1,
+        text: 'Seu Augusto vivia sozinho em sua oficina no térreo de um sobrado antigo. Passava os dias consertando engrenagens de relógios de corda, cercado pelo tique-taque incessante que ecoava pelas paredes de madeira.',
+      },
+      {
+        id: 2,
+        text: 'Nos últimos meses, desde que perdera sua companheira de vida, Seu Augusto raramente abria as cortinas azuis da sala. Porém, toda noite, pontualmente às oito horas, notas suaves e calorosas de violino começavam a flutuar da janela do segundo andar.',
+      },
+      {
+        id: 3,
+        text: 'O relojoeiro pousava suas pinças no balcão, fechava os olhos e respirava fundo com uma expressão de paz. Ele nunca vira o músico misterioso da janela vizinha, mas sabia que aquela melodia era um abraço sonoro feito para aquecer sua alma.',
+      },
+    ],
+  },
+  {
+    id: 'pegadas-farinha',
+    title: 'O Enigma do Bolo Desaparecido',
+    genre: 'Crônica',
+    authorOrSource: 'Histórias Divertidas do Cotidiano',
+    themeIcon: '🥧',
+    paragraphs: [
+      {
+        id: 1,
+        text: 'Dona Carmen acabara de tirar do forno um bolo fumegante de fubá com recheio de goiabada cascão. Ela cobriu o prato com um pano de prato rendado e foi até a varanda recolher as roupas do varal antes da chuva.',
+      },
+      {
+        id: 2,
+        text: 'Ao retornar para a cozinha, encontrou o pano tombado para o lado e uma fatia generosa faltando do bolo. Nenhuma porta ou janela havia batido, e o silêncio da casa era absoluto.',
+      },
+      {
+        id: 3,
+        text: 'No piso encerado da cozinha, pequenos vestígios brancos de farinha de trigo formavam uma trilha que serpenteava até a cesta de vime ao lado da lareira. Lá dentro, o gatinho Mingau fingia dormir profundamente, mas uma gotinha avermelhada de goiabada brilhava em seus bigodes brancos.',
+      },
+    ],
+  },
+];
+
+// EF35LP04: Questões Implícitas Exclusivas
 export const IMPLICIT_QUESTIONS: ImplicitQuestion[] = [
   {
     id: 'imp-1',
-    textId: 'tatu-bola',
-    question: 'Por que o tatu-bola se enrolou em formato de esfera assim que percebeu a aproximação de passos?',
-    excerptToAnalyze: 'Ao se aproximarem com passos suaves, a bolinha desenrolou lentamente...',
-    implicitClue: 'Esta espécie tem a incrível habilidade de se fechar por completo para se defender dos predadores',
-    pedagogicalReasoning: 'O texto não diz expressamente que ele sentiu medo de Tiago, mas sabemos que enrolar-se é sua forma natural de autodefesa contra ameaças.',
-    options: [
-      {
-        id: 'a',
-        text: 'Porque ele sentiu a vibração dos passos e ativou seu mecanismo de proteção contra possíveis predadores.',
-        isCorrect: true,
-        explanation: 'Fantástica dedução! Embora o texto não diga "o tatu teve medo", deduzimos isso porque o autor explica que enrolar-se é a defesa contra predadores.',
-      },
-      {
-        id: 'b',
-        text: 'Porque ele estava dormindo profundamente e gosta de rolar como brinquedo.',
-        isCorrect: false,
-        explanation: 'O formato esférico não é brincadeira, é uma estratégia biológica de sobrevivência.',
-      },
-      {
-        id: 'c',
-        text: 'Porque ele queria fingir ser uma pedra preciosa para ser levado embora.',
-        isCorrect: false,
-        explanation: 'Animais selvagens não buscam ser capturados; eles procuram segurança.',
-      },
-      {
-        id: 'd',
-        text: 'Porque ele estava com fome e procurava comida dentro da própria carapaça.',
-        isCorrect: false,
-        explanation: 'A carapaça serve de armadura para proteger a cabeça e as patas.',
-      },
-    ],
-  },
-  {
-    id: 'imp-2',
-    textId: 'telescopio-marina',
-    question: 'O que a expressão "seus olhos brilharam" revela sobre os sentimentos da aluna Sofia ao olhar pela lente?',
-    excerptToAnalyze: 'Quando a aluna Sofia olhou pela lente pela primeira vez, seus olhos brilharam...',
-    implicitClue: 'ela pôde ver nitidamente as crateras cinzentas da Lua e quatro luas brilhantes orbitando Júpiter',
-    pedagogicalReasoning: 'Dizer que os olhos brilharam é uma metáfora que expressa fascínio, encantamento e profunda admiração, e não uma luz física que acendeu no rosto.',
-    options: [
-      {
-        id: 'a',
-        text: 'Ela sentiu grande encantamento, surpresa e admiração diante da beleza do céu estrelado.',
-        isCorrect: true,
-        explanation: 'Brilhante interpretação! "Olhos brilharem" é uma figura de linguagem para representar fascínio e empolgação diante de algo incrível.',
-      },
-      {
-        id: 'b',
-        text: 'Ela ficou com dor de cabeça e seus olhos ficaram sensíveis à escuridão.',
-        isCorrect: false,
-        explanation: 'A expressão tem sentido positivo de deslumbramento e curiosidade.',
-      },
-      {
-        id: 'c',
-        text: 'Alguém acendeu uma lanterna muito forte bem dentro dos olhos dela.',
-        isCorrect: false,
-        explanation: 'Trata-se de uma metáfora para demonstrar emoção, não luz de lanterna.',
-      },
-      {
-        id: 'd',
-        text: 'Ela ficou com muito sono e queria ir para casa descansar.',
-        isCorrect: false,
-        explanation: 'Pelo contrário, ela ficou maravilhada com o que estava descobrindo.',
-      },
-    ],
-  },
-  {
-    id: 'imp-3',
     textId: 'sabedoria-formiga',
     question: 'Por que o besouro zombou da formiga quando a viu perto do riacho?',
     excerptToAnalyze: 'Um besouro que passava por ali zombou da formiga, dizendo que ela jamais conseguiria superar um obstáculo tão largo sem asas como as dele...',
@@ -538,7 +754,7 @@ export const IMPLICIT_QUESTIONS: ImplicitQuestion[] = [
     options: [
       {
         id: 'a',
-        text: 'Porque ele se considerava superior por ter asas e acreditava que só com força física ou vôo seria possível atravessar.',
+        text: 'Porque ele era arrogante e acreditava que só com asas e força física seria possível vencer obstáculos.',
         isCorrect: true,
         explanation: 'Exatamente! O besouro julgou a formiga pelo tamanho e pela falta de asas, subestimando o poder da inteligência e cooperação.',
       },
@@ -550,20 +766,54 @@ export const IMPLICIT_QUESTIONS: ImplicitQuestion[] = [
       },
       {
         id: 'c',
-        text: 'Porque ele sabia que a folha de embaúba iria afundar no riacho.',
+        text: 'Porque ele sabia com certeza que a folha de embaúba iria afundar na água.',
         isCorrect: false,
         explanation: 'A folha não afundou, e ele nem sabia que ela usaria essa estratégia.',
       },
       {
         id: 'd',
-        text: 'Porque as formigas tinham roubado a comida preferida dele.',
+        text: 'Porque as formigas tinham pego a comida favorita dele no formigueiro.',
         isCorrect: false,
         explanation: 'Não há menção de conflito de comida entre eles no texto.',
       },
     ],
   },
   {
-    id: 'imp-4',
+    id: 'imp-2',
+    textId: 'mala-sotao',
+    question: 'O que podemos deduzir sobre o passado da avó Clara a partir dos objetos encontrados por Lucas na mala?',
+    excerptToAnalyze: 'A jovem campeã no pódio tinha o mesmo sorriso travesso e o mesmo brilho no olhar de sua avó Clara...',
+    implicitClue: 'fotografias de jovens à beira de piscina olímpica e uma medalha dourada de 1954',
+    pedagogicalReasoning: 'O texto não diz abertamente "a vovó foi atleta profissional", mas as pistas da medalha, piscina e semelhança no pódio nos permitem deduzir isso com segurança.',
+    options: [
+      {
+        id: 'a',
+        text: 'A avó Clara foi uma atleta talentosa e campeã de natação na juventude, guardando suas conquistas com afeto.',
+        isCorrect: true,
+        explanation: 'Brilhante dedução! A medalha olímpica de 1954, as fotos na piscina e o sorriso idêntico no pódio revelam a carreira esportiva da avó.',
+      },
+      {
+        id: 'b',
+        text: 'A avó Clara comprou aquela mala velha em um brechó apenas para guardar alfazema.',
+        isCorrect: false,
+        explanation: 'Os objetos contam uma história pessoal íntima de vitórias e lembranças de sua juventude.',
+      },
+      {
+        id: 'c',
+        text: 'A família de Lucas tinha fobia de esportes aquáticos e nunca frequentava piscinas.',
+        isCorrect: false,
+        explanation: 'Pelo contrário, as fotos mostram conquistas de natação.',
+      },
+      {
+        id: 'd',
+        text: 'A medalha foi perdida por um vizinho que esqueceu a mala no sótão.',
+        isCorrect: false,
+        explanation: 'A foto no pódio mostrava a própria avó quando jovem.',
+      },
+    ],
+  },
+  {
+    id: 'imp-3',
     textId: 'horta-comunitaria',
     question: 'Podemos inferir que, antes da criação da horta comunitária, o terreno causava qual impacto para a vizinhança?',
     excerptToAnalyze: 'Em um terreno que antes acumulava apenas entulho e pneus velhos no bairro Vila Esperança...',
@@ -572,44 +822,116 @@ export const IMPLICIT_QUESTIONS: ImplicitQuestion[] = [
     options: [
       {
         id: 'a',
-        text: 'Trazia preocupações com sujeira, possíveis criadouros de mosquitos e sensação de abandono.',
+        text: 'Causava preocupações com sujeira, proliferação de mosquitos e desvalorização da vizinhança.',
         isCorrect: true,
-        explanation: 'Excelente raciocínio! Pneus velhos e entulhos são conhecidos por reter água parada e atrair pragas, tornando o local desagradável e perigoso.',
+        explanation: 'Excelente raciocínio! Pneus velhos e entulhos são conhecidos por reter água parada e atrair pragas, tornando o local perigoso e abandonado.',
       },
       {
         id: 'b',
-        text: 'Era o parque mais visitado e seguro de toda a região.',
+        text: 'Era considerado o parque mais seguro e florido de toda a cidade.',
         isCorrect: false,
-        explanation: 'Um terreno com entulho e pneus não era um parque seguro.',
+        explanation: 'Um terreno com pneus velhos e entulho não era um parque seguro.',
       },
       {
         id: 'c',
-        text: 'Servia como pista profissional de corrida de bicicletas velozes.',
+        text: 'Servia como uma pista oficial para competições velozes de skate e bicicleta.',
         isCorrect: false,
-        explanation: 'Não há nenhuma pista, era apenas acúmulo de sujeira descartada.',
+        explanation: 'Não havia pista nenhuma, apenas lixo e entulho abandonados.',
       },
       {
         id: 'd',
-        text: 'Era uma floresta nativa preservada com animais raros.',
+        text: 'Era uma reserva ecológica protegida pelo governo municipal.',
         isCorrect: false,
-        explanation: 'O texto diz claramente que acumulava lixo e entulho.',
+        explanation: 'O texto diz claramente que era um terreno com entulho descartado.',
+      },
+    ],
+  },
+  {
+    id: 'imp-4',
+    textId: 'violino-meianoite',
+    question: 'O que podemos inferir sobre a intenção do vizinho que tocava violino toda noite às oito horas?',
+    excerptToAnalyze: 'Ele nunca vira o músico misterioso da janela vizinha, mas sabia que aquela melodia era um abraço sonoro...',
+    implicitClue: 'desde que perdera sua companheira de vida, Seu Augusto raramente abria as cortinas... pontualmente às oito horas, notas suaves começavam a flutuar',
+    pedagogicalReasoning: 'A pontualidade e o tom suave da música logo após a perda sugerem que o vizinho percebeu a dor de Seu Augusto e usou a música como consolo silencioso.',
+    options: [
+      {
+        id: 'a',
+        text: 'O vizinho percebeu a tristeza de Seu Augusto e tocava com empatia para oferecer consolo e companhia através da música.',
+        isCorrect: true,
+        explanation: 'Profunda e bela leitura! A expressão "abraço sonoro" revela que o músico tocava deliberadamente para confortar o relojoeiro em seu luto.',
+      },
+      {
+        id: 'b',
+        text: 'O vizinho tocava o mais alto possível para irritar Seu Augusto e fazer barulho.',
+        isCorrect: false,
+        explanation: 'A música trazia paz e serenidade, não irritação.',
+      },
+      {
+        id: 'c',
+        text: 'O músico estava testando se as cordas do violino estavam quebradas antes de jogá-lo fora.',
+        isCorrect: false,
+        explanation: 'Ele tocava todas as noites com dedicação e harmonia.',
+      },
+      {
+        id: 'd',
+        text: 'O vizinho queria vender ingressos para um concerto particular na oficina de relógios.',
+        isCorrect: false,
+        explanation: 'Não havia interesse comercial, tratava-se de sensibilidade humana e solidariedade.',
+      },
+    ],
+  },
+  {
+    id: 'imp-5',
+    textId: 'pegadas-farinha',
+    question: 'Que pistas deixadas na cozinha nos permitem deduzir quem comeu a fatia do bolo de fubá?',
+    excerptToAnalyze: 'uma trilha que serpenteava até a cesta de vime... Mingau fingia dormir profundamente, mas uma gotinha avermelhada de goiabada brilhava em seus bigodes...',
+    implicitClue: 'trilha de farinha até a cesta onde Mingau finge dormir + gotinha de goiabada no bigode',
+    pedagogicalReasoning: 'A pista física (farinha no chão ligando a mesa ao cesto do gato) somada ao vestígio no bigode do animal prova que ele foi o autor da travessura.',
+    options: [
+      {
+        id: 'a',
+        text: 'As patinhas de farinha no chão levando ao cesto e a gotinha de goiabada presa nos bigodes de Mingau comprovam que o gato comeu a fatia.',
+        isCorrect: true,
+        explanation: 'Elementar, meu caro detetive! As pistas físicas deixadas pelo gatinho traíram seu disfarce de "sono profundo".',
+      },
+      {
+        id: 'b',
+        text: 'Dona Carmen esqueceu de assar o bolo e a fatia evaporou por causa do vento da janela.',
+        isCorrect: false,
+        explanation: 'Fatias de bolo não evaporam; houve uma ação direta do bichinho de estimação.',
+      },
+      {
+        id: 'c',
+        text: 'Um vizinho entrou invisível e limpou os sapatos na farinha de trigo.',
+        isCorrect: false,
+        explanation: 'A trilha foi deixada por patas pequenas e terminou na cesta do gato.',
+      },
+      {
+        id: 'd',
+        text: 'O gatinho Mingau estava tentando proteger o bolo contra ataques de formigas.',
+        isCorrect: false,
+        explanation: 'A goiabada em seu bigode e o fingimento mostram que ele mesmo se deliciou com o bolo.',
       },
     ],
   },
 ];
 
-// EF05LP03: Acentuação de Oxítonas, Paroxítonas e Proparoxítonas
-// Rules:
-// 1. Proparoxítonas: a antepenúltima é tônica. REGRA: TODAS são acentuadas! (Ex: lâmpada, árvore, matemática, música, xícara, pássaro)
-// 2. Oxítonas: a última é tônica. São acentuadas se terminarem em: a(s), e(s), o(s), em, ens. (Ex: café, cipó, você, sabiá, sofá, armazém, parabéns). Não acentua as terminadas em r, l, z, i, u (exceto hiato) como: papel, tambor, saci, urubu, caju.
-// 3. Paroxítonas: a penúltima é tônica. NÃO são acentuadas as terminadas em a, e, o, em/ens (a maioria: janela, livro, escola, menino). SÃO acentuadas as que terminam em r, x, n, l, ps, ã, ão, um, uns, i, us, ditongo (fácil, tórax, álbum, vírus, lápis, júri, órfão).
+// Combinação de todos os textos para compatibilidade com outros módulos (Dicionário, etc.)
+export const READING_TEXTS: ReadingText[] = [
+  ...EXPLICIT_TEXTS,
+  ...CENTRAL_IDEA_TEXTS,
+  ...IMPLICIT_TEXTS,
+];
+
+// =========================================================================
+// 4. BANCO DE PALAVRAS SILÁBICAS (EF05LP03)
+// =========================================================================
 export const SYLLABLE_EXERCISES: SyllableExercise[] = [
-  // Proparoxítonas (todas têm acento)
   {
     id: 'syl-1',
     word: 'lâmpada',
     syllables: ['lâm', 'pa', 'da'],
-    tonicIndex: 0, // antepenúltima (0 de 3)
+    tonicIndex: 0,
     classification: 'proparoxitona',
     needsAccent: true,
     accentRuleExplanation: 'Regra de Ouro: TODAS as palavras proparoxítonas recebem acento gráfico! A antepenúltima sílaba "lâm" é a mais forte.',
@@ -637,48 +959,16 @@ export const SYLLABLE_EXERCISES: SyllableExercise[] = [
   },
   {
     id: 'syl-4',
-    word: 'pássaro',
-    syllables: ['pás', 'sa', 'ro'],
-    tonicIndex: 0,
-    classification: 'proparoxitona',
-    needsAccent: true,
-    accentRuleExplanation: 'Antepenúltima sílaba tônica = Proparoxítona! Portanto, leva acento agudo na letra "a".',
-    wordWithoutAccent: 'passaro',
-  },
-  {
-    id: 'syl-5',
-    word: 'relâmpago',
-    syllables: ['re', 'lâm', 'pa', 'go'],
-    tonicIndex: 1, // antepenúltima (1 de 4: re [3ª], lâm [antepenúltima], pa [penúltima], go [última])
-    classification: 'proparoxitona',
-    needsAccent: true,
-    accentRuleExplanation: 'A antepenúltima sílaba "lâm" é a mais forte. Pela regra de ouro das proparoxítonas, recebe acento circunflexo!',
-    wordWithoutAccent: 'relampago',
-  },
-
-  // Oxítonas
-  {
-    id: 'syl-6',
     word: 'café',
     syllables: ['ca', 'fé'],
-    tonicIndex: 1, // última
+    tonicIndex: 1,
     classification: 'oxitona',
     needsAccent: true,
     accentRuleExplanation: 'É oxítona porque a última sílaba "fé" é a mais forte. Acentua-se porque termina na vogal "e"!',
     wordWithoutAccent: 'cafe',
   },
   {
-    id: 'syl-7',
-    word: 'sofá',
-    syllables: ['so', 'fá'],
-    tonicIndex: 1,
-    classification: 'oxitona',
-    needsAccent: true,
-    accentRuleExplanation: 'É oxítona com última sílaba tônica ("fá"). Acentuamos oxítonas terminadas em "a(s)".',
-    wordWithoutAccent: 'sofa',
-  },
-  {
-    id: 'syl-8',
+    id: 'syl-5',
     word: 'cipó',
     syllables: ['ci', 'pó'],
     tonicIndex: 1,
@@ -688,69 +978,27 @@ export const SYLLABLE_EXERCISES: SyllableExercise[] = [
     wordWithoutAccent: 'cipo',
   },
   {
-    id: 'syl-9',
+    id: 'syl-6',
     word: 'tambor',
     syllables: ['tam', 'bor'],
     tonicIndex: 1,
     classification: 'oxitona',
     needsAccent: false,
-    accentRuleExplanation: 'A última sílaba "bor" é a mais forte, portanto é OXÍTONA. Mas NÃO leva acento porque termina em "r" (oxítonas só levam acento terminadas em a, e, o, em/ens).',
+    accentRuleExplanation: 'A última sílaba "bor" é a mais forte, portanto é OXÍTONA. Mas NÃO leva acento porque termina em "r".',
     wordWithoutAccent: 'tambor',
   },
   {
-    id: 'syl-10',
-    word: 'caju',
-    syllables: ['ca', 'ju'],
-    tonicIndex: 1,
-    classification: 'oxitona',
-    needsAccent: false,
-    accentRuleExplanation: 'É oxítona (a sílaba forte é "ju"), porém oxítonas terminadas em "u" NÃO recebem acento gráfico!',
-    wordWithoutAccent: 'caju',
-  },
-  {
-    id: 'syl-11',
-    word: 'parabéns',
-    syllables: ['pa', 'ra', 'béns'],
-    tonicIndex: 2,
-    classification: 'oxitona',
-    needsAccent: true,
-    accentRuleExplanation: 'Oxítona terminada em "ens"! A regra determina que oxítonas terminadas em "em" ou "ens" recebem acento gráfico.',
-    wordWithoutAccent: 'parabens',
-  },
-
-  // Paroxítonas
-  {
-    id: 'syl-12',
+    id: 'syl-7',
     word: 'fácil',
     syllables: ['fá', 'cil'],
-    tonicIndex: 0, // penúltima
-    classification: 'paroxitona',
-    needsAccent: true,
-    accentRuleExplanation: 'É paroxítona (sílaba forte é a penúltima "fá"). Recebe acento porque termina na letra "L"!',
-    wordWithoutAccent: 'facil',
-  },
-  {
-    id: 'syl-13',
-    word: 'janela',
-    syllables: ['ja', 'ne', 'la'],
-    tonicIndex: 1, // penúltima
-    classification: 'paroxitona',
-    needsAccent: false,
-    accentRuleExplanation: 'A sílaba forte é "ne" (penúltima), logo é PAROXÍTONA. Não leva acento porque paroxítonas terminadas em "a" não são acentuadas!',
-    wordWithoutAccent: 'janela',
-  },
-  {
-    id: 'syl-14',
-    word: 'álbum',
-    syllables: ['ál', 'bum'],
     tonicIndex: 0,
     classification: 'paroxitona',
     needsAccent: true,
-    accentRuleExplanation: 'Paroxítona com sílaba tônica "ál". Leva acento porque termina em "um" (como fórum, álbum).',
-    wordWithoutAccent: 'album',
+    accentRuleExplanation: 'É paroxítona (sílaba forte é a penúltima "fá"). Recebe acento porque termina na consoante "L"!',
+    wordWithoutAccent: 'facil',
   },
   {
-    id: 'syl-15',
+    id: 'syl-8',
     word: 'caderno',
     syllables: ['ca', 'der', 'no'],
     tonicIndex: 1,
@@ -760,7 +1008,7 @@ export const SYLLABLE_EXERCISES: SyllableExercise[] = [
     wordWithoutAccent: 'caderno',
   },
   {
-    id: 'syl-16',
+    id: 'syl-9',
     word: 'tórax',
     syllables: ['tó', 'rax'],
     tonicIndex: 0,
@@ -768,15 +1016,5 @@ export const SYLLABLE_EXERCISES: SyllableExercise[] = [
     needsAccent: true,
     accentRuleExplanation: 'Paroxítona terminada na consoante "x"! As paroxítonas terminadas em r, x, n, l recebem acento gráfico.',
     wordWithoutAccent: 'torax',
-  },
-  {
-    id: 'syl-17',
-    word: 'amigo',
-    syllables: ['a', 'mi', 'go'],
-    tonicIndex: 1,
-    classification: 'paroxitona',
-    needsAccent: false,
-    accentRuleExplanation: 'A penúltima sílaba "mi" é a mais forte. É paroxítona natural terminada em "o", portanto sem acento.',
-    wordWithoutAccent: 'amigo',
   },
 ];

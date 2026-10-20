@@ -1,6 +1,6 @@
-import React from 'react';
-import { motion, type Variants } from 'framer-motion';
-import { Search, Compass, Eye, Sparkles, Star, Award, ArrowRight, BookOpen, CheckCircle, BarChart3, HelpCircle, Users, User, UserCheck } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence, type Variants } from 'framer-motion';
+import { Search, Compass, Eye, Sparkles, Star, Award, ArrowRight, BookOpen, CheckCircle, BarChart3, HelpCircle, Users, User, UserCheck, GraduationCap, Trophy } from 'lucide-react';
 import { BNCC_SKILLS_INFO } from '../data/bnccContent';
 import { soundManager } from '../utils/audio';
 import { DicaDeOuro } from './DicaDeOuro';
@@ -9,6 +9,8 @@ import { NivelProgressoXP } from './NivelProgressoXP';
 import { ResumoDesempenhoGrafico } from './ResumoDesempenhoGrafico';
 import { PainelMedalhas } from './PainelMedalhas';
 import { HistoricoAtividades } from './HistoricoAtividades';
+import { RankingDaTurma } from './RankingDaTurma';
+import { RankingGlobal } from './RankingGlobal';
 import { ActivityLogItem } from '../types/game';
 
 interface Props {
@@ -21,8 +23,10 @@ interface Props {
   activityHistory?: ActivityLogItem[];
   studentName?: string;
   classroomName?: string;
+  classroomId?: string;
   onOpenRules: () => void;
   onOpenIdentityModal?: () => void;
+  onOpenTutorial?: () => void;
   onBonusPoints?: (points: number) => void;
   onAcknowledgeBadge?: (badgeId: string) => void;
   onSimulateBadgeUnlock?: (badgeId: string) => void;
@@ -34,14 +38,27 @@ const containerVariants: Variants = {
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.08,
+      staggerChildren: 0.12,
+      delayChildren: 0.05,
     },
   },
 };
 
 const cardVariants: Variants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.25, ease: [0.16, 1, 0.3, 1] } },
+  hidden: {
+    opacity: 0,
+    scale: 0.88,
+    y: 20,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      duration: 0.45,
+      ease: [0.16, 1, 0.3, 1], // Smooth cubic-bezier exponential ease-out
+    },
+  },
 };
 
 export const MissionHub: React.FC<Props> = ({
@@ -54,19 +71,23 @@ export const MissionHub: React.FC<Props> = ({
   activityHistory = [],
   studentName,
   classroomName,
+  classroomId,
   onOpenRules,
   onOpenIdentityModal,
+  onOpenTutorial,
   onBonusPoints,
   onAcknowledgeBadge,
   onSimulateBadgeUnlock,
   onAddSampleActivity,
 }) => {
+  const [rankingTab, setRankingTab] = useState<'global' | 'turma'>('global');
+
   const missions = [
     {
       id: 'explicitas',
       code: 'EF15LP03',
       title: 'Detetive dos Fatos',
-      desc: 'Encontre informações, datas, nomes e lugares descritos com clareza nos textos.',
+      desc: 'Encontre informações, datas, nomes e lugares descritos com clareza nos textos exclusivos.',
       icon: Search,
       color: 'emerald',
       actionLabel: 'Iniciar Investigação',
@@ -76,31 +97,31 @@ export const MissionHub: React.FC<Props> = ({
       id: 'central',
       code: 'EF35LP03',
       title: 'A Bússola do Tema',
-      desc: 'Descubra a ideia central e o tema global de cada crônica ou reportagem.',
+      desc: 'Descubra a ideia central e o tema global de crônicas e fábulas exclusivas.',
       icon: Compass,
       color: 'sky',
       actionLabel: 'Ajustar a Bússola',
-      totalItems: 4,
+      totalItems: 5,
     },
     {
       id: 'implicitas',
       code: 'EF35LP04',
       title: 'Mago das Entrelinhas',
-      desc: 'Deduzi fatos ocultos, sentimentos e intenções a partir de pistas no texto.',
+      desc: 'Deduzi pistas ocultas, sentimentos e intenções em histórias e contos exclusivos.',
       icon: Eye,
       color: 'amber',
       actionLabel: 'Decifrar Pistas',
-      totalItems: 4,
+      totalItems: 5,
     },
     {
       id: 'acentuacao',
       code: 'EF05LP03',
       title: 'Usina dos Acentos',
-      desc: 'Descubra a sílaba tônica e acentue oxítonas, paroxítonas e proparoxítonas.',
+      desc: 'Descubra a sílaba tônica e acentue oxítonas, paroxítonas e proparoxítonas em desafios progressivos.',
       icon: Sparkles,
       color: 'indigo',
       actionLabel: 'Entrar na Usina',
-      totalItems: 17,
+      totalItems: 15,
     },
   ];
 
@@ -236,6 +257,21 @@ export const MissionHub: React.FC<Props> = ({
               <BookOpen className="w-4 h-4" />
               <span>Ver Manual de Acentos</span>
             </motion.button>
+
+            {onOpenTutorial && (
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  soundManager.playClick();
+                  onOpenTutorial();
+                }}
+                className="px-5 py-3 bg-amber-400/20 hover:bg-amber-400/30 text-amber-300 font-semibold text-sm rounded-xl transition-colors cursor-pointer flex items-center gap-2 border border-amber-400/30 shadow-xs"
+              >
+                <span>🦉</span>
+                <span>Tutorial com a Mentora Olívia</span>
+              </motion.button>
+            )}
           </div>
         </div>
 
@@ -294,6 +330,20 @@ export const MissionHub: React.FC<Props> = ({
           </div>
 
           <div className="flex items-center gap-3 flex-wrap">
+            {onOpenTutorial && (
+              <button
+                onClick={() => {
+                  soundManager.playClick();
+                  onOpenTutorial();
+                }}
+                className="text-xs text-amber-950 hover:text-black font-bold bg-amber-400 hover:bg-amber-300 border border-amber-500/30 px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+                title="Abrir o tutorial narrado pela Professora Olívia"
+              >
+                <span>🦉</span>
+                <span>Tutorial da Mentora</span>
+              </button>
+            )}
+
             <button
               onClick={() => {
                 soundManager.playClick();
@@ -308,34 +358,24 @@ export const MissionHub: React.FC<Props> = ({
             <button
               onClick={() => {
                 soundManager.playClick();
+                onSelectMission('professor');
+              }}
+              className="text-xs text-slate-950 font-bold bg-amber-300 hover:bg-amber-400 border border-amber-400 px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+              title="Acessar o Espaço do Professor com relatórios de turmas e emissão de certificados"
+            >
+              <GraduationCap className="w-3.5 h-3.5 text-slate-900" />
+              <span>Espaço do Professor 👨‍🏫</span>
+            </button>
+
+            <button
+              onClick={() => {
+                soundManager.playClick();
                 onSelectMission('certificado');
               }}
-              className="text-xs text-amber-800 hover:text-amber-950 font-bold bg-amber-100/80 hover:bg-amber-200 border border-amber-300 px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer shadow-2xs"
+              className="text-xs text-amber-900 hover:text-amber-950 font-bold bg-amber-100/90 hover:bg-amber-200 border border-amber-300 px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer shadow-2xs"
             >
-              <Award className="w-3.5 h-3.5 text-amber-600" />
-              <span>Certificado 🏅</span>
-            </button>
-
-            <button
-              onClick={() => {
-                soundManager.playClick();
-                onSelectMission('turmas');
-              }}
-              className="text-xs text-indigo-700 hover:text-indigo-900 font-bold bg-indigo-50 border border-indigo-200 px-3 py-1.5 rounded-lg flex items-center gap-1.5 cursor-pointer"
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>Relatórios por Turmas (Firebase)</span>
-            </button>
-
-            <button
-              onClick={() => {
-                soundManager.playClick();
-                onSelectMission('relatorio');
-              }}
-              className="text-xs text-slate-600 hover:text-slate-900 font-semibold flex items-center gap-1.5 cursor-pointer"
-            >
-              <BarChart3 className="w-3.5 h-3.5" />
-              <span>Relatório Individual</span>
+              <Award className="w-3.5 h-3.5 text-amber-700" />
+              <span>Certificados 🏅</span>
             </button>
           </div>
         </div>
@@ -354,20 +394,33 @@ export const MissionHub: React.FC<Props> = ({
               <motion.div
                 key={m.id}
                 variants={cardVariants}
-                whileHover={{ y: -3, transition: { duration: 0.18 } }}
-                className="bg-white rounded-2xl border border-slate-200 shadow-xs hover:shadow-md transition-shadow p-6 flex flex-col justify-between space-y-6 group"
+                whileHover={{
+                  y: -5,
+                  scale: 1.02,
+                  transition: { duration: 0.22, ease: [0.16, 1, 0.3, 1] },
+                }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  soundManager.playClick();
+                  onSelectMission(m.id);
+                }}
+                className="bg-white rounded-2xl border border-slate-200 shadow-2xs hover:shadow-lg transition-all p-6 flex flex-col justify-between space-y-6 group cursor-pointer hover:border-slate-300 relative overflow-hidden"
               >
                 <div className="space-y-4">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
-                        m.color === 'emerald' ? 'bg-emerald-100 text-emerald-700' :
-                        m.color === 'sky' ? 'bg-sky-100 text-sky-700' :
-                        m.color === 'amber' ? 'bg-amber-100 text-amber-700' :
-                        'bg-indigo-100 text-indigo-700'
-                      }`}>
+                      <motion.div
+                        whileHover={{ scale: 1.1, rotate: 3 }}
+                        transition={{ type: 'spring', stiffness: 350, damping: 15 }}
+                        className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 shadow-2xs ${
+                          m.color === 'emerald' ? 'bg-emerald-100 text-emerald-700' :
+                          m.color === 'sky' ? 'bg-sky-100 text-sky-700' :
+                          m.color === 'amber' ? 'bg-amber-100 text-amber-700' :
+                          'bg-indigo-100 text-indigo-700'
+                        }`}
+                      >
                         <Icon className="w-6 h-6" />
-                      </div>
+                      </motion.div>
                       <div>
                         <div className="flex items-center gap-2 text-xs font-mono text-slate-500">
                           <span>{m.code}</span>
@@ -414,12 +467,14 @@ export const MissionHub: React.FC<Props> = ({
                   </div>
 
                   <motion.button
-                    whileTap={{ scale: 0.96 }}
-                    onClick={() => {
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
                       soundManager.playClick();
                       onSelectMission(m.id);
                     }}
-                    className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 text-white ${
+                    className={`px-4 py-2 text-xs font-semibold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5 text-white shadow-2xs ${
                       m.color === 'emerald' ? 'bg-emerald-600 hover:bg-emerald-700' :
                       m.color === 'sky' ? 'bg-sky-600 hover:bg-sky-700' :
                       m.color === 'amber' ? 'bg-amber-600 hover:bg-amber-700' :
@@ -437,9 +492,10 @@ export const MissionHub: React.FC<Props> = ({
 
         {/* Sprint de Palavras Arcade Banner */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          initial={{ opacity: 0, scale: 0.92, y: 18 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          whileHover={{ scale: 1.012, y: -2 }}
           className="bg-gradient-to-r from-amber-500 via-amber-600 to-rose-600 text-white rounded-3xl p-6 sm:p-8 shadow-md flex flex-col md:flex-row items-center justify-between gap-6"
         >
           <div className="flex items-center gap-4">
@@ -477,9 +533,10 @@ export const MissionHub: React.FC<Props> = ({
 
         {/* Dicionário Visual Glossário Banner */}
         <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.25 }}
+          initial={{ opacity: 0, scale: 0.92, y: 18 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          whileHover={{ scale: 1.012, y: -2 }}
           className="bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-700 text-white rounded-3xl p-6 sm:p-8 shadow-md flex flex-col md:flex-row items-center justify-between gap-6"
         >
           <div className="flex items-center gap-4">
@@ -522,6 +579,97 @@ export const MissionHub: React.FC<Props> = ({
         onSelectMission={onSelectMission}
         onAddSampleActivity={onAddSampleActivity}
       />
+
+      {/* Ranking & Hall da Fama: Competição Saudável com Ranking Global (Top 10) e Ranking da Turma */}
+      <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
+          <div className="flex items-center gap-2.5 px-1">
+            <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm">
+              🏆
+            </div>
+            <div>
+              <span className="font-extrabold text-sm text-slate-900 font-display block">
+                Tabelas de Classificação & Conquista
+              </span>
+              <span className="text-[11px] text-slate-500 block">
+                Alunos com maiores pontuações no sistema BNCC
+              </span>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                setRankingTab('global');
+              }}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                rankingTab === 'global'
+                  ? 'bg-amber-400 text-slate-950 shadow-xs ring-2 ring-amber-300 font-extrabold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+              }`}
+            >
+              <span>🌍</span>
+              <span>Top 10 Global (Escola)</span>
+            </button>
+
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                setRankingTab('turma');
+              }}
+              className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                rankingTab === 'turma'
+                  ? 'bg-indigo-600 text-white shadow-xs font-extrabold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200'
+              }`}
+            >
+              <span>🏫</span>
+              <span>Minha Turma ({classroomName || '4º Ano A'})</span>
+            </button>
+          </div>
+        </div>
+
+        <AnimatePresence mode="wait">
+          {rankingTab === 'global' ? (
+            <motion.div
+              key="tab-ranking-global"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <RankingGlobal
+                currentStudentName={studentName || ''}
+                userScore={score}
+                userStars={starsCount}
+                userClassroomId={classroomId || 'turma-4a'}
+                userClassroomName={classroomName || '4º Ano A'}
+                onSelectMission={onSelectMission}
+                onOpenIdentityModal={onOpenIdentityModal}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="tab-ranking-turma"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+            >
+              <RankingDaTurma
+                classroomId={classroomId || 'turma-4a'}
+                classroomName={classroomName || '4º Ano A'}
+                currentStudentName={studentName || ''}
+                userScore={score}
+                userStars={starsCount}
+                onSelectMission={onSelectMission}
+                onOpenIdentityModal={onOpenIdentityModal}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
 
       {/* BNCC Skills Performance Bar Chart Summary */}
       <ResumoDesempenhoGrafico

@@ -1,3 +1,5 @@
+import { shuffleArray, shuffleOptions } from '../utils/questionShuffle';
+
 export interface SprintQuestion {
   id: string;
   word: string;
@@ -11,190 +13,248 @@ export interface SprintQuestion {
   category: 'classificacao' | 'regra' | 'tonica' | 'identificacao';
 }
 
+/**
+ * Banco de questões velozes para o Sprint de 60 segundos.
+ * Contém vocabulário exclusivo que não se repete com a Usina dos Acentos ou outras missões.
+ */
 export const SPRINT_QUESTIONS_BANK: SprintQuestion[] = [
   {
     id: 'sp-1',
-    word: 'LÂMPADA',
-    prompt: 'A palavra LÂMPADA tem a antepenúltima sílaba mais forte. Ela é:',
-    options: [
-      { id: 'a', text: 'Proparoxítona', isCorrect: true },
-      { id: 'b', text: 'Paroxítona', isCorrect: false },
-      { id: 'c', text: 'Oxítona', isCorrect: false },
-    ],
-    explanation: 'Antepenúltima sílaba forte = Proparoxítona! E todas são acentuadas.',
-    category: 'classificacao',
-  },
-  {
-    id: 'sp-2',
-    word: 'CAFÉ',
-    prompt: 'A palavra CAFÉ tem a última sílaba forte. Ela é classificada como:',
+    word: 'JACARÉ',
+    prompt: 'A palavra JACARÉ tem a última sílaba "ré" mais forte. Ela é classificada como:',
     options: [
       { id: 'a', text: 'Oxítona', isCorrect: true },
       { id: 'b', text: 'Paroxítona', isCorrect: false },
       { id: 'c', text: 'Proparoxítona', isCorrect: false },
     ],
-    explanation: 'Última sílaba forte = Oxítona! Leva acento porque termina em "e".',
+    explanation: 'Última sílaba tônica = Oxítona! Acentua-se por terminar em "e".',
+    category: 'classificacao',
+  },
+  {
+    id: 'sp-2',
+    word: 'ÔNIBUS',
+    prompt: 'Na palavra ÔNIBUS (ô-ni-bus), a antepenúltima sílaba é a mais forte. Ela é:',
+    options: [
+      { id: 'a', text: 'Proparoxítona', isCorrect: true },
+      { id: 'b', text: 'Paroxítona', isCorrect: false },
+      { id: 'c', text: 'Oxítona', isCorrect: false },
+    ],
+    explanation: 'Antepenúltima sílaba forte = Proparoxítona! E 100% delas levam acento gráfico.',
     category: 'classificacao',
   },
   {
     id: 'sp-3',
-    word: 'CADERNO',
-    prompt: 'Na palavra CADERNO (ca-der-no), a sílaba mais forte é "der" (penúltima). Ela é:',
+    word: 'AÇÚCAR',
+    prompt: 'A palavra AÇÚCAR é paroxítona e recebe acento gráfico porque termina em:',
     options: [
-      { id: 'a', text: 'Paroxítona', isCorrect: true },
-      { id: 'b', text: 'Oxítona', isCorrect: false },
-      { id: 'c', text: 'Proparoxítona', isCorrect: false },
+      { id: 'a', text: 'Consoante R', isCorrect: true },
+      { id: 'b', text: 'Vogal A', isCorrect: false },
+      { id: 'c', text: 'Ditongo', isCorrect: false },
     ],
-    explanation: 'Penúltima sílaba forte = Paroxítona.',
-    category: 'classificacao',
+    explanation: 'Paroxítonas terminadas em R, L, X, N sempre recebem acento gráfico!',
+    category: 'regra',
   },
   {
     id: 'sp-4',
-    word: 'ÁRVORE',
-    prompt: 'Qual regra explica por que a palavra ÁRVORE tem acento gráfico?',
+    word: 'SABIÁ',
+    prompt: 'Qual regra explica por que a palavra SABIÁ leva acento agudo?',
     options: [
-      { id: 'a', text: 'Todas as proparoxítonas são acentuadas', isCorrect: true },
-      { id: 'b', text: 'Termina com a letra "e"', isCorrect: false },
-      { id: 'c', text: 'É uma oxítona terminada em vogal', isCorrect: false },
+      { id: 'a', text: 'É oxítona terminada na vogal A', isCorrect: true },
+      { id: 'b', text: 'Toda palavra com três sílabas tem acento', isCorrect: false },
+      { id: 'c', text: 'É uma proparoxítona terminada em vogal', isCorrect: false },
     ],
-    explanation: 'ÁR-vo-re é proparoxítona, e 100% das proparoxítonas levam acento!',
+    explanation: 'Oxítonas terminadas em A, E, O (seguidas ou não de S) e EM/ENS levam acento!',
     category: 'regra',
   },
   {
     id: 'sp-5',
-    word: 'TAMBOR',
-    prompt: 'A palavra TAMBOR precisa de acento gráfico?',
+    word: 'ÓCULOS',
+    prompt: 'Qual é a sílaba tônica (mais forte) da palavra ÓCULOS?',
     options: [
-      { id: 'a', text: 'Não, oxítonas terminadas em R não têm acento', isCorrect: true },
-      { id: 'b', text: 'Sim, na letra O', isCorrect: false },
-      { id: 'c', text: 'Sim, na letra A', isCorrect: false },
+      { id: 'a', text: 'Ó (antepenúltima)', isCorrect: true },
+      { id: 'b', text: 'CU (penúltima)', isCorrect: false },
+      { id: 'c', text: 'LOS (última)', isCorrect: false },
     ],
-    explanation: 'Oxítonas só levam acento se terminarem em a, e, o, em, ens.',
-    category: 'regra',
+    explanation: '"Ó" é a antepenúltima sílaba, o que torna a palavra uma proparoxítona.',
+    category: 'tonica',
   },
   {
     id: 'sp-6',
-    word: 'FÁCIL',
-    prompt: 'A palavra FÁCIL é paroxítona e recebe acento agudo porque termina em:',
+    word: 'VÍRUS',
+    prompt: 'A palavra VÍRUS recebe acento porque é paroxítona terminada em:',
     options: [
-      { id: 'a', text: 'Consoante L', isCorrect: true },
-      { id: 'b', text: 'Vogal I', isCorrect: false },
-      { id: 'c', text: 'Ditongo', isCorrect: false },
+      { id: 'a', text: 'Terminação -US', isCorrect: true },
+      { id: 'b', text: 'Terminação -S', isCorrect: false },
+      { id: 'c', text: 'Consoante R', isCorrect: false },
     ],
-    explanation: 'Paroxítonas terminadas em L, R, X, N sempre recebem acento gráfico!',
+    explanation: 'Paroxítonas terminadas em -i, -is, -us recebem acento (como vírus, bônus, lápis).',
     category: 'regra',
   },
   {
     id: 'sp-7',
-    word: 'PÁSSARO',
-    prompt: 'Qual é a sílaba tônica (mais forte) da palavra PÁSSARO?',
+    word: 'DOMINÓ',
+    prompt: 'A palavra DOMINÓ é uma oxítona. Por que ela precisa de acento gráfico?',
     options: [
-      { id: 'a', text: 'PÁS (antepenúltima)', isCorrect: true },
-      { id: 'b', text: 'SA (penúltima)', isCorrect: false },
-      { id: 'c', text: 'RO (última)', isCorrect: false },
+      { id: 'a', text: 'Porque termina na vogal O', isCorrect: true },
+      { id: 'b', text: 'Porque começa com a letra D', isCorrect: false },
+      { id: 'c', text: 'Porque tem três consoantes', isCorrect: false },
     ],
-    explanation: 'PÁS é a antepenúltima sílaba, por isso a palavra é proparoxítona.',
-    category: 'tonica',
+    explanation: 'Oxítonas terminadas em O sempre recebem acento (ex.: cipó, dominó, jiló).',
+    category: 'regra',
   },
   {
     id: 'sp-8',
-    word: 'SOFÁ',
-    prompt: 'Qual destas palavras também é uma OXÍTONA como a palavra SOFÁ?',
+    word: 'CANETA',
+    prompt: 'Na palavra CANETA (ca-ne-ta), a sílaba forte é "ne" (penúltima). Por que ela NÃO tem acento?',
     options: [
-      { id: 'a', text: 'Cipó', isCorrect: true },
-      { id: 'b', text: 'Mesa', isCorrect: false },
-      { id: 'c', text: 'Médico', isCorrect: false },
+      { id: 'a', text: 'Porque paroxítonas terminadas em A não são acentuadas', isCorrect: true },
+      { id: 'b', text: 'Porque é uma palavra com seis letras', isCorrect: false },
+      { id: 'c', text: 'Porque é uma proparoxítona', isCorrect: false },
     ],
-    explanation: 'Ci-pó tem a última sílaba forte, assim como so-fá.',
-    category: 'identificacao',
+    explanation: 'A regra geral é: paroxítonas terminadas em A, E, O não levam acento.',
+    category: 'regra',
   },
   {
     id: 'sp-9',
-    word: 'MÉDICO',
-    prompt: 'Qual destas três palavras é uma PROPAROXÍTONA?',
+    word: 'PÊSSEGO',
+    prompt: 'A palavra PÊSSEGO é classificada como:',
     options: [
-      { id: 'a', text: 'MÉDICO', isCorrect: true },
-      { id: 'b', text: 'CANETA', isCorrect: false },
-      { id: 'c', text: 'JACARÉ', isCorrect: false },
+      { id: 'a', text: 'Proparoxítona', isCorrect: true },
+      { id: 'b', text: 'Paroxítona', isCorrect: false },
+      { id: 'c', text: 'Oxítona', isCorrect: false },
     ],
-    explanation: 'MÉ-di-co tem a antepenúltima sílaba mais forte.',
-    category: 'identificacao',
+    explanation: 'PÊS-se-go: a antepenúltima sílaba é a mais forte, logo é proparoxítona.',
+    category: 'classificacao',
   },
   {
     id: 'sp-10',
-    word: 'PARABÉNS',
-    prompt: 'A palavra PARABÉNS recebe acento gráfico porque é uma oxítona terminada em:',
+    word: 'ABACAXI',
+    prompt: 'Na palavra ABACAXI (a-ba-ca-xi), a sílaba tônica é "xi". Por que NÃO tem acento?',
     options: [
-      { id: 'a', text: '-ENS', isCorrect: true },
-      { id: 'b', text: '-S', isCorrect: false },
-      { id: 'c', text: '-N', isCorrect: false },
+      { id: 'a', text: 'Oxítonas terminadas em I não levam acento', isCorrect: true },
+      { id: 'b', text: 'Porque termina com vogal forte', isCorrect: false },
+      { id: 'c', text: 'Porque é paroxítona', isCorrect: false },
     ],
-    explanation: 'Oxítonas terminadas em -em ou -ens levam acento (armazém, parabéns).',
+    explanation: 'Oxítonas só são acentuadas em a, e, o, em/ens. As terminadas em I e U naturais não levam acento.',
     category: 'regra',
   },
   {
     id: 'sp-11',
-    word: 'CAJU',
-    prompt: 'A palavra CAJU (ca-JU) é oxítona. Ela leva acento gráfico?',
+    word: 'MÉDICO',
+    prompt: 'Separando MÉDICO (mé-di-co), qual sílaba recebe a maior força vocal?',
     options: [
-      { id: 'a', text: 'Não leva acento (oxítonas em U não têm acento)', isCorrect: true },
-      { id: 'b', text: 'Sim, leva acento agudo no U', isCorrect: false },
-      { id: 'c', text: 'Sim, leva acento circunflexo', isCorrect: false },
+      { id: 'a', text: 'MÉ (antepenúltima)', isCorrect: true },
+      { id: 'b', text: 'DI (penúltima)', isCorrect: false },
+      { id: 'c', text: 'CO (última)', isCorrect: false },
     ],
-    explanation: 'Oxítonas terminadas em "u" como caju, urubu e tatu não são acentuadas!',
-    category: 'regra',
-  },
-  {
-    id: 'sp-12',
-    word: 'TÓRAX',
-    prompt: 'A palavra TÓRAX é paroxítona e tem acento porque termina na consoante:',
-    options: [
-      { id: 'a', text: 'X', isCorrect: true },
-      { id: 'b', text: 'R', isCorrect: false },
-      { id: 'c', text: 'S', isCorrect: false },
-    ],
-    explanation: 'Paroxítonas terminadas em X recebem acento agudo.',
-    category: 'regra',
-  },
-  {
-    id: 'sp-13',
-    word: 'MÚSICA',
-    prompt: 'Separando as sílabas de MÚSICA (mú-si-ca), a sílaba "mú" ocupa qual posição?',
-    options: [
-      { id: 'a', text: 'Antepenúltima', isCorrect: true },
-      { id: 'b', text: 'Penúltima', isCorrect: false },
-      { id: 'c', text: 'Última', isCorrect: false },
-    ],
-    explanation: 'Contando de trás para frente: ca (última), si (penúltima), mú (antepenúltima).',
+    explanation: 'A sílaba "mé" é a antepenúltima tônica = proparoxítona!',
     category: 'tonica',
   },
   {
-    id: 'sp-14',
-    word: 'ÁLBUM',
-    prompt: 'Qual destas palavras também é uma PAROXÍTONA com acento como ÁLBUM?',
+    id: 'sp-12',
+    word: 'TROFÉU',
+    prompt: 'A palavra TROFÉU tem a última sílaba tônica com som aberto "-éu". Ela é:',
     options: [
-      { id: 'a', text: 'Fórum', isCorrect: true },
-      { id: 'b', text: 'Vovô', isCorrect: false },
-      { id: 'c', text: 'Vatapá', isCorrect: false },
+      { id: 'a', text: 'Oxítona com ditongo aberto acentuado', isCorrect: true },
+      { id: 'b', text: 'Paroxítona terminada em U', isCorrect: false },
+      { id: 'c', text: 'Proparoxítona', isCorrect: false },
     ],
-    explanation: 'Fó-rum e ál-bum são paroxítonas terminadas em -um!',
-    category: 'identificacao',
+    explanation: 'Ditongos abertos tônicos em palavras oxítonas (éi, éu, ói) são acentuados (chapéu, troféu, herói).',
+    category: 'classificacao',
+  },
+  {
+    id: 'sp-13',
+    word: 'JÚRI',
+    prompt: 'A palavra JÚRI é paroxítona e leva acento porque termina em:',
+    options: [
+      { id: 'a', text: 'Vogal I', isCorrect: true },
+      { id: 'b', text: 'Consoante R', isCorrect: false },
+      { id: 'c', text: 'Vogal U', isCorrect: false },
+    ],
+    explanation: 'Paroxítonas terminadas em I ou IS são sempre acentuadas (ex.: júri, lápis, táxi).',
+    category: 'regra',
+  },
+  {
+    id: 'sp-14',
+    word: 'REVÓLVER',
+    prompt: 'Qual regra justifica o acento agudo na palavra REVÓLVER?',
+    options: [
+      { id: 'a', text: 'Paroxítona terminada na consoante R', isCorrect: true },
+      { id: 'b', text: 'Oxítona terminada em ER', isCorrect: false },
+      { id: 'c', text: 'Proparoxítona obrigatória', isCorrect: false },
+    ],
+    explanation: 'Re-vól-ver tem a penúltima sílaba forte e termina em R = acentua-se!',
+    category: 'regra',
   },
   {
     id: 'sp-15',
-    word: 'RELÂMPAGO',
-    prompt: 'Quantas proparoxítonas na língua portuguesa NÃO levam acento?',
+    word: 'FÓSFORO',
+    prompt: 'Qual é a regra geral de ouro para a palavra FÓSFORO?',
     options: [
-      { id: 'a', text: 'Nenhuma! Todas são acentuadas!', isCorrect: true },
-      { id: 'b', text: 'Apenas dez palavras', isCorrect: false },
-      { id: 'c', text: 'Metade das palavras', isCorrect: false },
+      { id: 'a', text: 'Todas as proparoxítonas são acentuadas sem exceção', isCorrect: true },
+      { id: 'b', text: 'Apenas proparoxítonas terminadas em O são acentuadas', isCorrect: false },
+      { id: 'c', text: 'Palavras de três sílabas terminadas em R levam acento', isCorrect: false },
     ],
-    explanation: 'A regra suprema do português: 100% das proparoxítonas levam acento!',
+    explanation: 'FÓS-fo-ro tem antepenúltima sílaba tônica. 100% das proparoxítonas levam acento.',
     category: 'regra',
+  },
+  {
+    id: 'sp-16',
+    word: 'BIQUÍNI',
+    prompt: 'A palavra BIQUÍNI é paroxítona. Qual terminação exige o seu acento?',
+    options: [
+      { id: 'a', text: 'Terminação em I', isCorrect: true },
+      { id: 'b', text: 'Terminação em NI', isCorrect: false },
+      { id: 'c', text: 'Início com a letra B', isCorrect: false },
+    ],
+    explanation: 'Bi-quí-ni tem a penúltima sílaba forte e termina em "i", exigindo acento agudo.',
+    category: 'regra',
+  },
+  {
+    id: 'sp-17',
+    word: 'PARABÉNS',
+    prompt: 'Por que a palavra PARABÉNS recebe acento gráfico na última sílaba?',
+    options: [
+      { id: 'a', text: 'Porque é oxítona terminada em -ENS', isCorrect: true },
+      { id: 'b', text: 'Porque é paroxítona terminada em -S', isCorrect: false },
+      { id: 'c', text: 'Porque é proparoxítona', isCorrect: false },
+    ],
+    explanation: 'Oxítonas terminadas em -em e -ens sempre levam acento (armazém, também, parabéns).',
+    category: 'regra',
+  },
+  {
+    id: 'sp-18',
+    word: 'CROCHÊ',
+    prompt: 'A palavra CROCHÊ tem som fechado na última sílaba. Ela é classificada como:',
+    options: [
+      { id: 'a', text: 'Oxítona acentuada com circunflexo', isCorrect: true },
+      { id: 'b', text: 'Paroxítona', isCorrect: false },
+      { id: 'c', text: 'Proparoxítona', isCorrect: false },
+    ],
+    explanation: 'Cro-chê é oxítona terminada em "e". O acento circunflexo indica a vogal tônica fechada.',
+    category: 'classificacao',
   },
 ];
 
+/**
+ * Retorna uma seleção aleatória de questões com ordem totalmente embaralhada
+ * e alternativas embaralhadas para cada questão, garantindo que a resposta certa
+ * não fique sempre na mesma posição.
+ */
 export function getRandomSprintQuestions(count: number = 10): SprintQuestion[] {
-  const shuffled = [...SPRINT_QUESTIONS_BANK].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, count);
+  const shuffledQuestions = shuffleArray(SPRINT_QUESTIONS_BANK);
+  const selected = shuffledQuestions.slice(0, count);
+
+  return selected.map(q => {
+    const letters = ['a', 'b', 'c'];
+    const shuffledOptions = shuffleArray(q.options).map((opt, idx) => ({
+      ...opt,
+      id: letters[idx] || opt.id,
+    }));
+
+    return {
+      ...q,
+      options: shuffledOptions,
+    };
+  });
 }

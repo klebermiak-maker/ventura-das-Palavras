@@ -108,4 +108,5 @@ export interface UserStats {
   studentName?: string;
   classroomId?: string;
   classroomName?: string;
+  hasSeenTutorial?: boolean;
 }

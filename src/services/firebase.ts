@@ -399,6 +399,107 @@ const SAMPLE_STUDENTS_PER_CLASS: Record<string, FirebaseStudentPerformance[]> = 
       updatedAt: new Date().toISOString(),
     },
   ],
+  'turma-4b': [
+    {
+      studentId: 'aluno_sophia_martins',
+      studentName: 'Sophia Martins',
+      classroomId: 'turma-4b',
+      score: 610,
+      starsEarned: 30,
+      levelNumber: 4,
+      levelTitle: 'Mestre das Palavras',
+      badgesCount: 5,
+      ef15lp03_correct: 10,
+      ef15lp03_attempted: 10,
+      ef35lp03_correct: 9,
+      ef35lp03_attempted: 10,
+      ef35lp04_correct: 9,
+      ef35lp04_attempted: 10,
+      ef05lp03_correct: 8,
+      ef05lp03_attempted: 9,
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      studentId: 'aluno_rafael_albuquerque',
+      studentName: 'Rafael Albuquerque',
+      classroomId: 'turma-4b',
+      score: 440,
+      starsEarned: 22,
+      levelNumber: 3,
+      levelTitle: 'Sábio dos Textos',
+      badgesCount: 4,
+      ef15lp03_correct: 7,
+      ef15lp03_attempted: 9,
+      ef35lp03_correct: 7,
+      ef35lp03_attempted: 8,
+      ef35lp04_correct: 6,
+      ef35lp04_attempted: 8,
+      ef05lp03_correct: 5,
+      ef05lp03_attempted: 7,
+      updatedAt: new Date().toISOString(),
+    },
+  ],
+  'turma-5b': [
+    {
+      studentId: 'aluno_julia_mendes',
+      studentName: 'Júlia Mendes',
+      classroomId: 'turma-5b',
+      score: 550,
+      starsEarned: 27,
+      levelNumber: 4,
+      levelTitle: 'Mestre das Palavras',
+      badgesCount: 5,
+      ef15lp03_correct: 9,
+      ef15lp03_attempted: 10,
+      ef35lp03_correct: 8,
+      ef35lp03_attempted: 9,
+      ef35lp04_correct: 8,
+      ef35lp04_attempted: 9,
+      ef05lp03_correct: 7,
+      ef05lp03_attempted: 9,
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      studentId: 'aluno_felipe_costa',
+      studentName: 'Felipe Costa',
+      classroomId: 'turma-5b',
+      score: 380,
+      starsEarned: 19,
+      levelNumber: 3,
+      levelTitle: 'Sábio dos Textos',
+      badgesCount: 3,
+      ef15lp03_correct: 6,
+      ef15lp03_attempted: 8,
+      ef35lp03_correct: 6,
+      ef35lp03_attempted: 8,
+      ef35lp04_correct: 5,
+      ef35lp04_attempted: 7,
+      ef05lp03_correct: 5,
+      ef05lp03_attempted: 7,
+      updatedAt: new Date().toISOString(),
+    },
+  ],
+  'turma-3b': [
+    {
+      studentId: 'aluno_nicolas_ramos',
+      studentName: 'Nicolas Ramos',
+      classroomId: 'turma-3b',
+      score: 460,
+      starsEarned: 23,
+      levelNumber: 3,
+      levelTitle: 'Sábio dos Textos',
+      badgesCount: 4,
+      ef15lp03_correct: 8,
+      ef15lp03_attempted: 9,
+      ef35lp03_correct: 7,
+      ef35lp03_attempted: 8,
+      ef35lp04_correct: 7,
+      ef35lp04_attempted: 8,
+      ef05lp03_correct: 5,
+      ef05lp03_attempted: 7,
+      updatedAt: new Date().toISOString(),
+    },
+  ],
 };
 
 // Seed initial classrooms if empty, and ensure 3º and 5º Ano A-E exist
@@ -554,5 +655,127 @@ export async function syncStudentPerformanceToFirebase(
     return data;
   } catch (error) {
     handleFirestoreError(error, OperationType.WRITE, path);
+  }
+}
+
+export interface GlobalRankedStudent extends FirebaseStudentPerformance {
+  classroomName: string;
+}
+
+/**
+ * Consulta o Firestore e obtém os melhores estudantes de todas as turmas (Ranking Global).
+ * Ordena por pontuação (score) e estrelas (starsEarned), permitindo visualizar o Top 10 geral.
+ */
+export async function fetchGlobalRankingFromFirebase(limitCount: number = 10): Promise<{
+  students: GlobalRankedStudent[];
+  totalStudentsCount: number;
+  classroomsCount: number;
+}> {
+  try {
+    const classrooms = await fetchClassrooms();
+    const classroomNameMap = new Map<string, string>();
+    classrooms.forEach(c => classroomNameMap.set(c.id, c.name));
+
+    // Parallel fetch students from all classrooms in Firestore
+    const studentPromises = classrooms.map(async c => {
+      try {
+        const snap = await getDocs(collection(db, 'classrooms', c.id, 'students'));
+        if (!snap.empty) {
+          return snap.docs.map(d => {
+            const data = d.data() as FirebaseStudentPerformance;
+            return {
+              ...data,
+              classroomName: c.name || classroomNameMap.get(data.classroomId) || c.id,
+            };
+          });
+        }
+        return [];
+      } catch (err) {
+        console.warn(`Firestore query for classroom ${c.id} failed, skipping:`, err);
+        return [];
+      }
+    });
+
+    const results = await Promise.all(studentPromises);
+    const allStudents: GlobalRankedStudent[] = [];
+    const seenStudentIds = new Set<string>();
+
+    for (const group of results) {
+      for (const st of group) {
+        if (!seenStudentIds.has(st.studentId)) {
+          seenStudentIds.add(st.studentId);
+          allStudents.push(st);
+        }
+      }
+    }
+
+    // Include sample students from registered sample classes to guarantee lively competition
+    for (const [classId, samples] of Object.entries(SAMPLE_STUDENTS_PER_CLASS)) {
+      const cName = classroomNameMap.get(classId) || (
+        classId === 'turma-3a' ? '3º Ano A' :
+        classId === 'turma-3b' ? '3º Ano B' :
+        classId === 'turma-4a' ? '4º Ano A' :
+        classId === 'turma-4b' ? '4º Ano B' :
+        classId === 'turma-5a' ? '5º Ano A' :
+        classId === 'turma-5b' ? '5º Ano B' : 'Turma BNCC'
+      );
+      for (const sample of samples) {
+        if (!seenStudentIds.has(sample.studentId)) {
+          seenStudentIds.add(sample.studentId);
+          allStudents.push({
+            ...sample,
+            classroomName: cName,
+          });
+        }
+      }
+    }
+
+    // Sort descending by score, then starsEarned, then badgesCount
+    allStudents.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      if (b.starsEarned !== a.starsEarned) return b.starsEarned - a.starsEarned;
+      return (b.badgesCount || 0) - (a.badgesCount || 0);
+    });
+
+    return {
+      students: allStudents.slice(0, limitCount),
+      totalStudentsCount: allStudents.length,
+      classroomsCount: classrooms.length,
+    };
+  } catch (error) {
+    console.warn('Erro ao consultar ranking global no Firestore, aplicando fallback:', error);
+    const fallbackList: GlobalRankedStudent[] = [];
+    const seen = new Set<string>();
+
+    Object.entries(SAMPLE_STUDENTS_PER_CLASS).forEach(([cId, list]) => {
+      const cName = (
+        cId === 'turma-3a' ? '3º Ano A' :
+        cId === 'turma-3b' ? '3º Ano B' :
+        cId === 'turma-4a' ? '4º Ano A' :
+        cId === 'turma-4b' ? '4º Ano B' :
+        cId === 'turma-5a' ? '5º Ano A' :
+        cId === 'turma-5b' ? '5º Ano B' : 'Turma'
+      );
+      list.forEach(s => {
+        if (!seen.has(s.studentId)) {
+          seen.add(s.studentId);
+          fallbackList.push({
+            ...s,
+            classroomName: cName,
+          });
+        }
+      });
+    });
+
+    fallbackList.sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      return b.starsEarned - a.starsEarned;
+    });
+
+    return {
+      students: fallbackList.slice(0, limitCount),
+      totalStudentsCount: fallbackList.length,
+      classroomsCount: 6,
+    };
   }
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Volume2, VolumeX, BookOpen, Star, RotateCcw, User, Users } from 'lucide-react';
+import { Volume2, VolumeX, BookOpen, Star, RotateCcw, User, Users, GraduationCap } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 import { getPlayerLevelInfo } from '../utils/levels';
 
@@ -14,6 +14,7 @@ interface HeaderProps {
   onToggleMute: () => void;
   onOpenRules: () => void;
   onOpenIdentityModal: () => void;
+  onOpenTutorial?: () => void;
   onResetProgress: () => void;
 }
 
@@ -28,6 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
   onToggleMute,
   onOpenRules,
   onOpenIdentityModal,
+  onOpenTutorial,
   onResetProgress,
 }) => {
   return (
@@ -118,17 +120,6 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={() => {
               soundManager.playClick();
-              onNavigate('relatorio');
-            }}
-            className={`whitespace-nowrap shrink-0 hover:text-slate-900 transition-colors py-1 cursor-pointer ${
-              currentView === 'relatorio' ? 'text-indigo-600 font-semibold border-b-2 border-indigo-600' : ''
-            }`}
-          >
-            Relatório Aluno
-          </button>
-          <button
-            onClick={() => {
-              soundManager.playClick();
               onNavigate('dicionario');
             }}
             className={`whitespace-nowrap shrink-0 hover:text-slate-900 transition-colors py-1 cursor-pointer flex items-center gap-1 ${
@@ -137,27 +128,33 @@ export const Header: React.FC<HeaderProps> = ({
           >
             <span>Dicionário 📖</span>
           </button>
+
           <button
             onClick={() => {
               soundManager.playClick();
-              onNavigate('turmas');
+              onNavigate('ranking');
             }}
             className={`whitespace-nowrap shrink-0 hover:text-slate-900 transition-colors py-1 cursor-pointer flex items-center gap-1 ${
-              currentView === 'turmas' ? 'text-indigo-600 font-semibold border-b-2 border-indigo-600' : ''
+              currentView === 'ranking' ? 'text-amber-600 font-semibold border-b-2 border-amber-500' : ''
             }`}
           >
-            <span>Turmas 👥</span>
+            <span>Ranking 🏆</span>
           </button>
+
           <button
             onClick={() => {
               soundManager.playClick();
-              onNavigate('certificado');
+              onNavigate('professor');
             }}
-            className={`whitespace-nowrap shrink-0 hover:text-slate-900 transition-colors py-1 cursor-pointer flex items-center gap-1 ${
-              currentView === 'certificado' ? 'text-amber-600 font-semibold border-b-2 border-amber-500' : ''
+            className={`whitespace-nowrap shrink-0 transition-all px-3 py-1.5 rounded-xl cursor-pointer flex items-center gap-1.5 text-xs font-bold ${
+              ['professor', 'turmas', 'relatorio', 'certificado'].includes(currentView)
+                ? 'bg-slate-900 text-white shadow-xs ring-2 ring-amber-400'
+                : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-950 border border-indigo-200 shadow-2xs'
             }`}
+            title="Espaço do Professor: Relatórios de Turmas, Diagnóstico e Emissão de Certificados"
           >
-            <span>Certificado 🏅</span>
+            <GraduationCap className="w-4 h-4 text-amber-500 shrink-0" />
+            <span>Espaço do Professor 👨‍🏫</span>
           </button>
         </nav>
 
@@ -227,6 +224,21 @@ export const Header: React.FC<HeaderProps> = ({
             <BookOpen className="w-3.5 h-3.5" />
             <span>Manual de Acentos</span>
           </button>
+
+          {/* Mentor Tutorial Trigger */}
+          {onOpenTutorial && (
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                onOpenTutorial();
+              }}
+              className="px-3 py-2 text-xs font-bold text-amber-950 bg-amber-400 hover:bg-amber-300 rounded-lg transition-colors whitespace-nowrap shrink-0 flex items-center gap-1.5 cursor-pointer shadow-xs"
+              title="Abrir Tutorial Guiado pela Mentora Profª Olívia"
+            >
+              <span>🦉</span>
+              <span className="hidden sm:inline">Tutorial</span>
+            </button>
+          )}
         </div>
       </div>
     </header>

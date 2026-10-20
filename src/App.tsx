@@ -11,8 +11,10 @@ import { RelatorioEducador } from './components/RelatorioEducador';
 import { RelatorioTurmas } from './components/RelatorioTurmas';
 import { DicionarioVisual } from './components/DicionarioVisual';
 import { CertificadoConquista } from './components/CertificadoConquista';
+import { EspacoDoProfessor } from './components/EspacoDoProfessor';
 import { StudentIdentificationModal } from './components/StudentIdentificationModal';
 import { RegrasAcentuacaoModal } from './components/RegrasAcentuacaoModal';
+import { MentorTutorialModal } from './components/MentorTutorialModal';
 import { CelebrationOverlay, CelebrationData } from './components/CelebrationOverlay';
 import { BNCCSkill, UserStats, ActivityLogItem } from './types/game';
 import { soundManager } from './utils/audio';
@@ -55,6 +57,7 @@ export default function App() {
   const [isIdentityModalOpen, setIsIdentityModalOpen] = useState<boolean>(false);
   const [pendingMission, setPendingMission] = useState<string | null>(null);
   const [celebrationData, setCelebrationData] = useState<CelebrationData | null>(null);
+  const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(false);
 
   const [stats, setStats] = useState<UserStats>(() => {
     try {
@@ -79,6 +82,11 @@ export default function App() {
   useEffect(() => {
     if (!stats.studentName || stats.studentName.trim() === '') {
       setIsIdentityModalOpen(true);
+    } else {
+      const hasSeen = localStorage.getItem('has_seen_mentor_tutorial');
+      if (hasSeen !== 'true') {
+        setIsTutorialOpen(true);
+      }
     }
   }, []);
 
@@ -368,6 +376,24 @@ export default function App() {
     setStats(updated);
     syncToFirebaseIfIdentified(updated);
     setIsIdentityModalOpen(false);
+
+    // If student hasn't experienced the Mentor Tutorial yet, introduce them warmly!
+    const hasSeenTutorial = localStorage.getItem('has_seen_mentor_tutorial') === 'true';
+    if (!hasSeenTutorial) {
+      setIsTutorialOpen(true);
+    } else if (pendingMission) {
+      setCurrentView(pendingMission);
+      setPendingMission(null);
+    }
+  };
+
+  const handleCompleteTutorial = () => {
+    try {
+      localStorage.setItem('has_seen_mentor_tutorial', 'true');
+    } catch {
+      // Storage unavailable
+    }
+    setIsTutorialOpen(false);
     if (pendingMission) {
       setCurrentView(pendingMission);
       setPendingMission(null);
@@ -388,6 +414,7 @@ export default function App() {
         onToggleMute={handleToggleMute}
         onOpenRules={() => setIsRulesModalOpen(true)}
         onOpenIdentityModal={() => setIsIdentityModalOpen(true)}
+        onOpenTutorial={() => setIsTutorialOpen(true)}
         onResetProgress={handleResetProgress}
       />
 
@@ -411,8 +438,10 @@ export default function App() {
                 recentBadges={stats.recentBadges || []}
                 studentName={stats.studentName}
                 classroomName={stats.classroomName}
+                classroomId={stats.classroomId || 'turma-4a'}
                 onOpenRules={() => setIsRulesModalOpen(true)}
                 onOpenIdentityModal={() => setIsIdentityModalOpen(true)}
+                onOpenTutorial={() => setIsTutorialOpen(true)}
                 onBonusPoints={handleBonusPoints}
                 onAcknowledgeBadge={handleAcknowledgeBadge}
                 onSimulateBadgeUnlock={handleSimulateBadgeUnlock}
@@ -503,44 +532,6 @@ export default function App() {
             </motion.div>
           )}
 
-          {currentView === 'relatorio' && (
-            <motion.div
-              key="relatorio"
-              variants={viewTransitionVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              <RelatorioEducador
-                skillStats={stats.skillStats}
-                score={stats.score}
-                starsCount={stats.starsEarned}
-                badgesEarned={stats.badgesEarned}
-                studentName={stats.studentName || ''}
-                onUpdateStudentName={handleUpdateStudentName}
-                onResetProgress={handleResetProgress}
-                onNavigate={setCurrentView}
-              />
-            </motion.div>
-          )}
-
-          {currentView === 'turmas' && (
-            <motion.div
-              key="turmas"
-              variants={viewTransitionVariants}
-              initial="initial"
-              animate="animate"
-              exit="exit"
-            >
-              <RelatorioTurmas
-                userStats={stats}
-                currentClassroomId={stats.classroomId || 'turma-4a'}
-                onNavigate={setCurrentView}
-                onOpenIdentityModal={() => setIsIdentityModalOpen(true)}
-              />
-            </motion.div>
-          )}
-
           {currentView === 'dicionario' && (
             <motion.div
               key="dicionario"
@@ -557,18 +548,30 @@ export default function App() {
             </motion.div>
           )}
 
-          {currentView === 'certificado' && (
+          {['professor', 'turmas', 'relatorio', 'certificado', 'ranking'].includes(currentView) && (
             <motion.div
-              key="certificado"
+              key="espaco-professor"
               variants={viewTransitionVariants}
               initial="initial"
               animate="animate"
               exit="exit"
             >
-              <CertificadoConquista
+              <EspacoDoProfessor
                 userStats={stats}
+                currentClassroomId={stats.classroomId || 'turma-4a'}
+                initialTab={
+                  currentView === 'ranking'
+                    ? 'ranking'
+                    : currentView === 'relatorio'
+                    ? 'relatorio'
+                    : currentView === 'certificado'
+                    ? 'certificado'
+                    : 'turmas'
+                }
                 onNavigate={setCurrentView}
                 onOpenIdentityModal={() => setIsIdentityModalOpen(true)}
+                onUpdateStudentName={handleUpdateStudentName}
+                onResetProgress={handleResetProgress}
               />
             </motion.div>
           )}
@@ -615,6 +618,18 @@ export default function App() {
           <CelebrationOverlay
             data={celebrationData}
             onClose={() => setCelebrationData(null)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Gamified Mentor Tutorial Modal with Professor Olivia */}
+      <AnimatePresence>
+        {isTutorialOpen && (
+          <MentorTutorialModal
+            isOpen={isTutorialOpen}
+            onClose={() => setIsTutorialOpen(false)}
+            onComplete={handleCompleteTutorial}
+            studentName={stats.studentName}
           />
         )}
       </AnimatePresence>

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Volume2, VolumeX, Lightbulb, CheckCircle2, ArrowRight, Target, Sparkles } from 'lucide-react';
-import { CENTRAL_IDEA_QUESTIONS, READING_TEXTS } from '../data/bnccContent';
+import { Compass, Volume2, VolumeX, Lightbulb, CheckCircle2, ArrowRight, Target, Sparkles, Shuffle } from 'lucide-react';
+import { CENTRAL_IDEA_QUESTIONS, CENTRAL_IDEA_TEXTS } from '../data/bnccContent';
+import { shuffleQuestionsAndOptions } from '../utils/questionShuffle';
 import { soundManager } from '../utils/audio';
 import { speechService } from '../utils/speech';
 import confetti from 'canvas-confetti';
@@ -14,14 +15,25 @@ interface Props {
 }
 
 export const IdeiaCentralGame: React.FC<Props> = ({ onEarnScore, onNavigate, completedQuestions }) => {
+  const [questions, setQuestions] = useState(() => shuffleQuestionsAndOptions(CENTRAL_IDEA_QUESTIONS));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isNarrating, setIsNarrating] = useState(false);
   const [lives, setLives] = useState(3);
 
-  const currentQuestion = CENTRAL_IDEA_QUESTIONS[currentIndex];
-  const currentText = READING_TEXTS.find(t => t.id === currentQuestion.textId) || READING_TEXTS[0];
+  const currentQuestion = questions[currentIndex] || questions[0];
+  const currentText = CENTRAL_IDEA_TEXTS.find(t => t.id === currentQuestion.textId) || CENTRAL_IDEA_TEXTS[0];
+
+  const handleReshuffle = () => {
+    soundManager.playClick();
+    speechService.stop();
+    setIsNarrating(false);
+    setQuestions(shuffleQuestionsAndOptions(CENTRAL_IDEA_QUESTIONS));
+    setCurrentIndex(0);
+    setSelectedOptionId(null);
+    setHasSubmitted(false);
+  };
 
   const handleRecoverLives = () => {
     setLives(3);
@@ -62,7 +74,7 @@ export const IdeiaCentralGame: React.FC<Props> = ({ onEarnScore, onNavigate, com
     setSelectedOptionId(null);
     setHasSubmitted(false);
 
-    if (currentIndex < CENTRAL_IDEA_QUESTIONS.length - 1) {
+    if (currentIndex < questions.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
       soundManager.playFanfare();
@@ -111,8 +123,17 @@ export const IdeiaCentralGame: React.FC<Props> = ({ onEarnScore, onNavigate, com
             pedagogicalTip="A ideia central abrange o texto como um todo! Pergunte a si mesmo: qual é a mensagem principal que o autor quer comunicar do início ao fim?"
           />
 
+          <button
+            onClick={handleReshuffle}
+            title="Embaralhar ordem das perguntas e alternativas"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-50 hover:bg-sky-100 text-sky-800 border border-sky-300 text-xs font-bold transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+          >
+            <Shuffle className="w-3.5 h-3.5 text-sky-600" />
+            <span>Embaralhar 🔀</span>
+          </button>
+
           <div className="text-xs font-mono font-bold text-slate-600 bg-sky-50 border border-sky-200 px-3 py-1.5 rounded-lg shrink-0">
-            Desafio {currentIndex + 1} de {CENTRAL_IDEA_QUESTIONS.length}
+            Desafio {currentIndex + 1} de {questions.length}
           </div>
         </div>
       </div>

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Volume2, VolumeX, Lightbulb, CheckCircle2, ArrowRight, RotateCcw, Sparkles } from 'lucide-react';
-import { EXPLICIT_QUESTIONS, READING_TEXTS } from '../data/bnccContent';
+import { Search, Volume2, VolumeX, Lightbulb, CheckCircle2, ArrowRight, RotateCcw, Sparkles, Shuffle } from 'lucide-react';
+import { EXPLICIT_QUESTIONS, EXPLICIT_TEXTS } from '../data/bnccContent';
+import { shuffleQuestionsAndOptions } from '../utils/questionShuffle';
 import { soundManager } from '../utils/audio';
 import { speechService } from '../utils/speech';
 import confetti from 'canvas-confetti';
@@ -14,6 +15,8 @@ interface Props {
 }
 
 export const ExplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, completedQuestions }) => {
+  // Shuffled questions pool for current run
+  const [questions, setQuestions] = useState(() => shuffleQuestionsAndOptions(EXPLICIT_QUESTIONS));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
@@ -22,8 +25,19 @@ export const ExplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, compl
   const [fontSizeClass, setFontSizeClass] = useState<'text-base' | 'text-lg'>('text-base');
   const [lives, setLives] = useState(3);
 
-  const currentQuestion = EXPLICIT_QUESTIONS[currentIndex];
-  const currentText = READING_TEXTS.find(t => t.id === currentQuestion.textId) || READING_TEXTS[0];
+  const currentQuestion = questions[currentIndex] || questions[0];
+  const currentText = EXPLICIT_TEXTS.find(t => t.id === currentQuestion.textId) || EXPLICIT_TEXTS[0];
+
+  const handleReshuffle = () => {
+    soundManager.playClick();
+    speechService.stop();
+    setIsNarrating(false);
+    setQuestions(shuffleQuestionsAndOptions(EXPLICIT_QUESTIONS));
+    setCurrentIndex(0);
+    setSelectedOptionId(null);
+    setHasSubmitted(false);
+    setShowClueHighlight(false);
+  };
 
   const handleRecoverLives = () => {
     setLives(3);
@@ -66,7 +80,7 @@ export const ExplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, compl
     setHasSubmitted(false);
     setShowClueHighlight(false);
 
-    if (currentIndex < EXPLICIT_QUESTIONS.length - 1) {
+    if (currentIndex < questions.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
       soundManager.playFanfare();
@@ -135,8 +149,17 @@ export const ExplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, compl
             </button>
           </div>
 
+          <button
+            onClick={handleReshuffle}
+            title="Embaralhar ordem das perguntas e alternativas"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+          >
+            <Shuffle className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Embaralhar 🔀</span>
+          </button>
+
           <div className="text-xs font-mono font-bold text-slate-600 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">
-            Pergunta {currentIndex + 1} de {EXPLICIT_QUESTIONS.length}
+            Pergunta {currentIndex + 1} de {questions.length}
           </div>
         </div>
       </div>

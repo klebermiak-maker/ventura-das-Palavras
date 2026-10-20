@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Eye, Volume2, VolumeX, Sparkles, CheckCircle2, ArrowRight, HelpCircle, FileSearch } from 'lucide-react';
-import { IMPLICIT_QUESTIONS, READING_TEXTS } from '../data/bnccContent';
+import { Eye, Volume2, VolumeX, Sparkles, CheckCircle2, ArrowRight, HelpCircle, FileSearch, Shuffle } from 'lucide-react';
+import { IMPLICIT_QUESTIONS, IMPLICIT_TEXTS } from '../data/bnccContent';
+import { shuffleQuestionsAndOptions } from '../utils/questionShuffle';
 import { soundManager } from '../utils/audio';
 import { speechService } from '../utils/speech';
 import confetti from 'canvas-confetti';
@@ -14,14 +15,25 @@ interface Props {
 }
 
 export const ImplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, completedQuestions }) => {
+  const [questions, setQuestions] = useState(() => shuffleQuestionsAndOptions(IMPLICIT_QUESTIONS));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [isNarrating, setIsNarrating] = useState(false);
   const [lives, setLives] = useState(3);
 
-  const currentQuestion = IMPLICIT_QUESTIONS[currentIndex];
-  const currentText = READING_TEXTS.find(t => t.id === currentQuestion.textId) || READING_TEXTS[0];
+  const currentQuestion = questions[currentIndex] || questions[0];
+  const currentText = IMPLICIT_TEXTS.find(t => t.id === currentQuestion.textId) || IMPLICIT_TEXTS[0];
+
+  const handleReshuffle = () => {
+    soundManager.playClick();
+    speechService.stop();
+    setIsNarrating(false);
+    setQuestions(shuffleQuestionsAndOptions(IMPLICIT_QUESTIONS));
+    setCurrentIndex(0);
+    setSelectedOptionId(null);
+    setHasSubmitted(false);
+  };
 
   const handleRecoverLives = () => {
     setLives(3);
@@ -62,7 +74,7 @@ export const ImplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, compl
     setSelectedOptionId(null);
     setHasSubmitted(false);
 
-    if (currentIndex < IMPLICIT_QUESTIONS.length - 1) {
+    if (currentIndex < questions.length - 1) {
       setCurrentIndex(prev => prev + 1);
     } else {
       soundManager.playFanfare();
@@ -111,8 +123,17 @@ export const ImplicitasGame: React.FC<Props> = ({ onEarnScore, onNavigate, compl
             pedagogicalTip="Nas questões implícitas, combine as palavras do texto com a lógica do contexto. Se o personagem está com capa molhada e guarda-chuva, podemos inferir que choveu lá fora!"
           />
 
+          <button
+            onClick={handleReshuffle}
+            title="Embaralhar ordem dos enigmas e alternativas"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 text-xs font-bold transition-all cursor-pointer shadow-2xs hover:scale-105 active:scale-95"
+          >
+            <Shuffle className="w-3.5 h-3.5 text-amber-600" />
+            <span>Embaralhar 🔀</span>
+          </button>
+
           <div className="text-xs font-mono font-bold text-slate-600 bg-amber-50 border border-amber-200 px-3 py-1.5 rounded-lg shrink-0">
-            Enigma {currentIndex + 1} de {IMPLICIT_QUESTIONS.length}
+            Enigma {currentIndex + 1} de {questions.length}
           </div>
         </div>
       </div>
