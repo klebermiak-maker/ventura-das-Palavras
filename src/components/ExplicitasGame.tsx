@@ -23,6 +23,7 @@ import { speechService } from '../utils/speech';
 import confetti from 'canvas-confetti';
 import { VidasAprendizado } from './VidasAprendizado';
 import { GameMode } from '../types/game';
+import { useMissionTips } from '../hooks/useMissionTips';
 
 interface AttemptDetails {
   firstTryCorrect: boolean;
@@ -77,6 +78,21 @@ export const ExplicitasGame: React.FC<Props> = ({
 
   const currentQuestion = questions[currentIndex] || questions[0];
   const currentText = EXPLICIT_TEXTS.find(t => t.id === currentQuestion.textId) || EXPLICIT_TEXTS[0];
+
+  // Auto-suggest pedagogical hint when student spends longer than the teacher-configured threshold
+  const {
+    isTipSuggested,
+    secondsElapsed,
+    dismissTip,
+    acceptTip,
+    tipMessage,
+    configuredThreshold,
+  } = useMissionTips({
+    questionId: currentQuestion.id,
+    hasSubmitted,
+    hintLevel,
+    completedQuestions,
+  });
 
   // Report session progress on question index change
   useEffect(() => {
@@ -413,6 +429,57 @@ export const ExplicitasGame: React.FC<Props> = ({
 
             {/* Progressive Hint Drawer */}
             <div className="pt-3 border-t border-slate-100 space-y-3">
+              {/* Auto-suggested Tip Alert after 30s */}
+              <AnimatePresence>
+                {isTipSuggested && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95, y: -6 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95, y: -6 }}
+                    transition={{ duration: 0.2 }}
+                    className="p-4 rounded-2xl bg-amber-50 border-2 border-amber-400 text-amber-950 shadow-xs space-y-2.5"
+                    role="alert"
+                    aria-live="polite"
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex items-center gap-2 font-bold text-xs text-amber-950">
+                        <span className="text-base" aria-hidden="true">🕵️‍♂️</span>
+                        <span>Apoio Pedagógico Sugerido ({configuredThreshold}s de reflexão)</span>
+                      </div>
+                      <span className="text-[10px] font-mono font-bold bg-amber-200/80 px-2 py-0.5 rounded-full text-amber-950">
+                        {secondsElapsed}s decorridos
+                      </span>
+                    </div>
+
+                    <p className="text-xs leading-relaxed text-amber-900 font-medium">
+                      {tipMessage}
+                    </p>
+
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          acceptTip();
+                          handleUseHint();
+                        }}
+                        className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs transition-all"
+                      >
+                        <Lightbulb className="w-3.5 h-3.5 fill-slate-950" />
+                        <span>Sim, ver primeira ajuda</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={dismissTip}
+                        className="px-3 py-1.5 rounded-xl bg-white hover:bg-amber-100/60 text-slate-700 font-semibold text-xs border border-amber-300 cursor-pointer transition-all"
+                      >
+                        Continuar pensando sozinho
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <button
                   onClick={handleUseHint}

@@ -16,6 +16,8 @@ import {
   Calendar,
   Layers,
   Trophy,
+  RefreshCw,
+  Sliders,
 } from 'lucide-react';
 import { UserStats, BNCCSkill } from '../types/game';
 import { RelatorioTurmas } from './RelatorioTurmas';
@@ -23,10 +25,11 @@ import { RelatorioEducador } from './RelatorioEducador';
 import { CertificadoConquista } from './CertificadoConquista';
 import { RankingGlobal } from './RankingGlobal';
 import { GestaoEstudantesTurmas } from './GestaoEstudantesTurmas';
+import { ConfiguracoesPedagogicas } from './ConfiguracoesPedagogicas';
 import { OFFICIAL_SCHOOL_NAME } from '../services/firebase';
 import { soundManager } from '../utils/audio';
 
-export type ProfessorTab = 'turmas' | 'gestao_alunos' | 'certificado' | 'relatorio' | 'ranking';
+export type ProfessorTab = 'turmas' | 'gestao_alunos' | 'certificado' | 'relatorio' | 'ranking' | 'configuracoes';
 
 interface Props {
   userStats: UserStats;
@@ -189,6 +192,21 @@ export const EspacoDoProfessor: React.FC<Props> = ({
             >
               <Trophy className="w-4 h-4 text-amber-400" />
               <span>5. Ranking Global (Top 10 Geral)</span>
+            </button>
+
+            <button
+              onClick={() => handleTabChange('configuracoes')}
+              className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                activeTab === 'configuracoes'
+                  ? 'bg-white text-indigo-950 shadow-md ring-2 ring-amber-400'
+                  : 'bg-indigo-400/20 hover:bg-indigo-400/30 text-indigo-100 hover:text-white border border-indigo-400/30'
+              }`}
+            >
+              <Sliders className="w-4 h-4 text-amber-400" />
+              <span>6. Configurações de Dicas & Inatividade ⚙️</span>
+              <span className="text-[10px] bg-amber-400 text-slate-950 font-bold px-1.5 py-0.2 rounded-full font-mono">
+                Novo
+              </span>
             </button>
           </div>
         </div>
@@ -370,6 +388,20 @@ export const EspacoDoProfessor: React.FC<Props> = ({
                 userClassroomName={userStats.classroomName || '4º Ano A'}
                 onSelectMission={onNavigate}
                 onOpenIdentityModal={onOpenIdentityModal}
+              />
+            </motion.div>
+          )}
+
+          {activeTab === 'configuracoes' && (
+            <motion.div
+              key="tab-configuracoes"
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ConfiguracoesPedagogicas
+                onNavigateToMission={onNavigate}
               />
             </motion.div>
           )}
