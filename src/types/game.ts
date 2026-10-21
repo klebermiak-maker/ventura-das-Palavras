@@ -1,8 +1,25 @@
 /**
  * Types and interfaces for the BNCC 4th Grade Portuguese Game
+ * Aventura das Palavras - Alinhamento Pedagógico BNCC
  */
 
 export type BNCCSkill = 'EF15LP03' | 'EF35LP03' | 'EF35LP04' | 'EF05LP03';
+
+export type GameMode = 'aprender' | 'desafio';
+
+export type DiagnosticClassification =
+  | 'not_evaluated'       // Ainda não avaliada (0 questões respondidas)
+  | 'evaluating'           // Em avaliação (1 a N-1 questões respondidas, abaixo do mínimo)
+  | 'needs_reinforcement'  // Precisa de reforço (< 60%)
+  | 'developing'           // Em desenvolvimento (60% a 79%)
+  | 'mastered';            // Objetivo atingido (>= 80%)
+
+export interface PedagogicalCriteria {
+  minQuestionsRequired: number; // Padrão: 3 questões distintas
+  thresholdReinforcement: number; // < 60%
+  thresholdDeveloping: number; // 60% a 79%
+  thresholdMastered: number; // >= 80%
+}
 
 export interface BNCCSkillInfo {
   code: BNCCSkill;
@@ -33,10 +50,17 @@ export interface ReadingText {
 }
 
 export interface QuestionOption {
-  id: string;
+  id: string; // Identificador estável (ex: 'opt-cervos'), imutável
   text: string;
   isCorrect: boolean;
   explanation: string;
+  displayLetter?: string; // Atribuído apenas na renderização visual ('A', 'B', 'C', 'D')
+}
+
+export interface ProgressiveHint {
+  level1Guidance: string; // Nível 1: Orientar o que procurar (conceitual/estratégia)
+  level2Paragraph?: number; // Nível 2: Indicar o parágrafo relevante
+  level3Excerpt?: string; // Nível 3: Destacar o trecho exato no texto
 }
 
 export interface ExplicitQuestion {
@@ -46,6 +70,7 @@ export interface ExplicitQuestion {
   paragraphRef: number;
   options: QuestionOption[];
   clueWord: string;
+  progressiveHint?: ProgressiveHint;
 }
 
 export interface CentralIdeaQuestion {
@@ -55,6 +80,7 @@ export interface CentralIdeaQuestion {
   bestHeadlineQuestion: string;
   options: QuestionOption[];
   learningTip: string;
+  progressiveHint?: ProgressiveHint;
 }
 
 export interface ImplicitQuestion {
@@ -65,6 +91,7 @@ export interface ImplicitQuestion {
   options: QuestionOption[];
   implicitClue: string;
   pedagogicalReasoning: string;
+  progressiveHint?: ProgressiveHint;
 }
 
 export type SyllableClassification = 'oxitona' | 'paroxitona' | 'proparoxitona';
@@ -91,6 +118,44 @@ export interface ActivityLogItem {
   completedAt: string;
   formattedDate?: string;
   questionsAnswered?: number;
+  isDemo?: boolean; // Identificação explícita de itens de demonstração
+}
+
+export interface QuestionAnswerRecord {
+  questionId: string;
+  skill: BNCCSkill;
+  firstTryCorrect: boolean; // Acertou na 1ª tentativa sem dica
+  answeredWithHint: boolean; // Acertou utilizando dica
+  hintsUsed: number;
+  hintLevelsUsed: number[]; // Níveis 1, 2 e/ou 3
+  attemptsCount: number; // Quantidade de tentativas
+  finalCorrect: boolean;
+  answeredAt: string;
+  gameMode: GameMode;
+}
+
+export interface DetailedSkillStat {
+  distinctQuestionsAttempted: number;
+  distinctQuestionsCorrect: number;
+  firstTryWithoutHintCorrect: number;
+  withHintCorrect: number;
+  afterRetryCorrect: number;
+  totalHintsUsed: number;
+  totalAttempts: number;
+}
+
+export interface InProgressSession {
+  missionId: string;
+  missionTitle: string;
+  questionIndex: number;
+  totalQuestions: number;
+  timestamp: string;
+}
+
+export interface UserAccessibilitySettings {
+  fontSize: 'normal' | 'grande' | 'muito_grande';
+  reduceMotion: boolean;
+  isMuted: boolean;
 }
 
 export interface UserStats {
@@ -101,6 +166,8 @@ export interface UserStats {
     attempted: number;
     correct: number;
   }>;
+  detailedSkillStats?: Record<BNCCSkill, DetailedSkillStat>;
+  questionAnswers?: Record<string, QuestionAnswerRecord>;
   badgesEarned: string[];
   recentBadges?: string[];
   activityHistory?: ActivityLogItem[];
@@ -109,4 +176,10 @@ export interface UserStats {
   classroomId?: string;
   classroomName?: string;
   hasSeenTutorial?: boolean;
+  isGuest?: boolean;
+  gameMode?: GameMode;
+  inProgressSession?: InProgressSession | null;
+  accessibility?: UserAccessibilitySettings;
+  participationPoints?: number; // Pontos de engajamento
+  learningPoints?: number; // Pontos de aprendizagem
 }

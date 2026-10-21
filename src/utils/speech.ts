@@ -1,11 +1,13 @@
 /**
  * Web Speech API text-to-speech helper with pt-BR voice support
+ * Provides Play, Pause, Resume, and Stop controls without reducing student score.
  */
 
 class SpeechService {
   private synth: SpeechSynthesis | null = null;
   private currentUtterance: SpeechSynthesisUtterance | null = null;
   private isSpeaking: boolean = false;
+  private isPausedState: boolean = false;
   private onEndCallback: (() => void) | null = null;
 
   constructor() {
@@ -19,7 +21,11 @@ class SpeechService {
   }
 
   public getIsSpeaking(): boolean {
-    return this.isSpeaking;
+    return this.isSpeaking && !this.isPausedState;
+  }
+
+  public getIsPaused(): boolean {
+    return this.isPausedState;
   }
 
   public speak(text: string, onEnd?: () => void) {
@@ -30,10 +36,10 @@ class SpeechService {
     this.onEndCallback = onEnd || null;
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'pt-BR';
-    utterance.rate = 0.95; // Slightly slower, clear pace for 4th graders
-    utterance.pitch = 1.05; // Friendly warm pitch
+    utterance.rate = 0.95; // Cadência pausada e acolhedora para alunos do 4º ano
+    utterance.pitch = 1.05;
 
-    // Try finding a Brazilian Portuguese voice
+    // Localizar voz em português do Brasil
     const voices = this.synth.getVoices();
     const ptVoice = voices.find(v => v.lang.startsWith('pt-BR') || v.lang.startsWith('pt'));
     if (ptVoice) {
@@ -42,10 +48,12 @@ class SpeechService {
 
     utterance.onstart = () => {
       this.isSpeaking = true;
+      this.isPausedState = false;
     };
 
     utterance.onend = () => {
       this.isSpeaking = false;
+      this.isPausedState = false;
       this.currentUtterance = null;
       if (this.onEndCallback) {
         this.onEndCallback();
@@ -54,6 +62,7 @@ class SpeechService {
 
     utterance.onerror = () => {
       this.isSpeaking = false;
+      this.isPausedState = false;
       this.currentUtterance = null;
     };
 
@@ -61,10 +70,25 @@ class SpeechService {
     this.synth.speak(utterance);
   }
 
+  public pause() {
+    if (this.synth && this.isSpeaking && !this.isPausedState) {
+      this.synth.pause();
+      this.isPausedState = true;
+    }
+  }
+
+  public resume() {
+    if (this.synth && this.isPausedState) {
+      this.synth.resume();
+      this.isPausedState = false;
+    }
+  }
+
   public stop() {
     if (this.synth) {
       this.synth.cancel();
       this.isSpeaking = false;
+      this.isPausedState = false;
       this.currentUtterance = null;
     }
   }

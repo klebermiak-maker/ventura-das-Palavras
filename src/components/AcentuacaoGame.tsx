@@ -36,12 +36,29 @@ import { speechService } from '../utils/speech';
 import { shuffleArray } from '../utils/questionShuffle';
 import confetti from 'canvas-confetti';
 import { VidasAprendizado } from './VidasAprendizado';
+import { GameMode } from '../types/game';
+
+interface AttemptDetails {
+  firstTryCorrect: boolean;
+  withHint: boolean;
+  hintsUsedCount: number;
+  attemptsCount: number;
+  gameMode: GameMode;
+}
 
 interface Props {
-  onEarnScore: (points: number, stars: number, skill: 'EF05LP03', questionId: string) => void;
+  onEarnScore: (
+    points: number,
+    stars: number,
+    skill: 'EF05LP03',
+    questionId: string,
+    details?: AttemptDetails
+  ) => void;
   onNavigate: (view: string) => void;
   onOpenRules: () => void;
   completedQuestions: Record<string, boolean>;
+  initialGameMode?: GameMode;
+  onSessionProgress?: (missionId: string, questionIndex: number, totalQuestions: number) => void;
 }
 
 type StageFilter = 'todos' | 'classificar' | 'escolher_grafia' | 'identificar_inadequada';
@@ -79,11 +96,18 @@ export const AcentuacaoGame: React.FC<Props> = ({
   onEarnScore,
   onNavigate,
   onOpenRules,
+  completedQuestions,
+  initialGameMode = 'aprender',
+  onSessionProgress,
 }) => {
   // Current active stage mode & Shuffled challenges
   const [selectedStage, setSelectedStage] = useState<StageFilter>('todos');
   const [challenges, setChallenges] = useState<AnyAcentuacaoChallenge[]>(() => generateShuffledChallenges('todos'));
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Game Mode & Attempt Tracking
+  const [gameMode, setGameMode] = useState<GameMode>(initialGameMode);
+  const [attemptsOnCurrent, setAttemptsOnCurrent] = useState<number>(0);
 
   // Classification Challenge State
   const [selectedSyllableIdx, setSelectedSyllableIdx] = useState<number | null>(null);
@@ -139,9 +163,17 @@ export const AcentuacaoGame: React.FC<Props> = ({
     speechService.speak(textToSpeak);
   };
 
+  // Session progress notification
+  useEffect(() => {
+    if (onSessionProgress) {
+      onSessionProgress('acentuacao', currentIndex, challenges.length);
+    }
+  }, [currentIndex, challenges.length, onSessionProgress]);
+
   // Determine if student has completed current interaction form
   const canSubmit = () => {
-    if (hasSubmitted || lives <= 0) return false;
+    if (hasSubmitted) return false;
+    if (gameMode === 'desafio' && lives <= 0) return false;
     if (currentChallenge.type === 'classificar') {
       return selectedSyllableIdx !== null && selectedClass !== null;
     }
@@ -157,6 +189,9 @@ export const AcentuacaoGame: React.FC<Props> = ({
   // Check the answer based on challenge type
   const handleSubmitAnswer = () => {
     if (!canSubmit()) return;
+
+    const newAttempts = attemptsOnCurrent + 1;
+    setAttemptsOnCurrent(newAttempts);
     setHasSubmitted(true);
 
     let isCorrect = false;
@@ -180,7 +215,14 @@ export const AcentuacaoGame: React.FC<Props> = ({
 
     if (isCorrect) {
       soundManager.playCorrect();
-      onEarnScore(120, 1, 'EF05LP03', currentChallenge.id);
+      const points = newAttempts === 1 ? 120 : 80;
+      onEarnScore(points, 1, 'EF05LP03', currentChallenge.id, {
+        firstTryCorrect: newAttempts === 1,
+        withHint: false,
+        hintsUsedCount: 0,
+        attemptsCount: newAttempts,
+        gameMode,
+      });
       confetti({
         particleCount: 45,
         spread: 65,
@@ -188,14 +230,33 @@ export const AcentuacaoGame: React.FC<Props> = ({
       });
     } else {
       soundManager.playWrong();
-      setLives(prev => Math.max(0, prev - 1));
-      onEarnScore(30, 0, 'EF05LP03', currentChallenge.id);
+      if (gameMode === 'desafio') {
+        setLives(prev => Math.max(0, prev - 1));
+      }
+      onEarnScore(30, 0, 'EF05LP03', currentChallenge.id, {
+        firstTryCorrect: false,
+        withHint: false,
+        hintsUsedCount: 0,
+        attemptsCount: newAttempts,
+        gameMode,
+      });
     }
+  };
+
+  const handleRetryCurrentChallenge = () => {
+    soundManager.playClick();
+    setHasSubmitted(false);
+    setIsAnswerCorrect(null);
+    setSelectedSyllableIdx(null);
+    setSelectedClass(null);
+    setSelectedOptionId(null);
+    setSelectedWordId(null);
   };
 
   const handleNextChallenge = () => {
     soundManager.playClick();
     resetSelectionStates();
+    setAttemptsOnCurrent(0);
 
     if (currentIndex < challenges.length - 1) {
       setCurrentIndex(prev => prev + 1);

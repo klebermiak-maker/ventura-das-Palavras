@@ -19,10 +19,11 @@ export function shuffleArray<T>(items: readonly T[] | T[]): T[] {
 }
 
 export interface GenericOption {
-  id: string;
+  id: string; // Identificador estável
   text: string;
   isCorrect: boolean;
   explanation?: string;
+  displayLetter?: string;
 }
 
 export interface GenericQuestion {
@@ -32,13 +33,13 @@ export interface GenericQuestion {
 }
 
 /**
- * Shuffles the options of a question and assigns fresh standard letters ('a', 'b', 'c', 'd')
- * while maintaining isCorrect and explanation intact.
+ * Shuffles the options of a question and assigns visual letters ('A', 'B', 'C', 'D')
+ * based purely on visual position, while maintaining isCorrect, stable id, and explanation intact.
  */
 export function shuffleOptions<T extends { id: string; text: string; isCorrect: boolean; explanation?: string }>(
   options: T[]
 ): T[] {
-  const letters = ['a', 'b', 'c', 'd', 'e'];
+  const letters = ['A', 'B', 'C', 'D', 'E'];
   const shuffled = shuffleArray(options);
   return shuffled.map((opt, idx) => ({
     ...opt,
